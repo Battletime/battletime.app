@@ -2,21 +2,21 @@ angular.module('starter.services', [])
 
 .service('CachedHttp', function($q, $http){
 
-  //var apiRoot = "http://localhost:3000"
-  var apiRoot = "http://battletime.herokuapp.com"
-
   this.getResource = function(resource){
+
     var deferred = $q.defer();
     var cache = localStorage.getItem(resource);
 
-    if(cache) {
-      deferred.resolve(angular.fromJson(cache).data);
-      return deferred.promise; //no need to continue
-    } 
+    //ff cache verwijderen, werkt nog niet helemaal naar behoren
+    // if(cache) {
+    //   var cacheObject = 
+    //   deferred.resolve(angular.fromJson(cache));
+    //   return deferred.promise; //no need to continue
+    // } 
     
-    $http.get(apiRoot + resource).then((event) => {
-      localStorage.setItem(resource, JSON.stringify(event));
-      deferred.resolve(event);
+    $http.get(resource).then((result) => {
+      localStorage.setItem(resource, JSON.stringify(result.data));
+      deferred.resolve(result.data);
     });
     
     return deferred.promise;
@@ -26,7 +26,10 @@ angular.module('starter.services', [])
 
 .service('EventService', function(CachedHttp, $state, $http){
 
-    var apiRoot = "http://localhost:3000"
+    this.get = function(){
+      var resource = '/events';  
+      return CachedHttp.getResource(resource);
+    }
 
     this.getDetails = function(eventId){
       var resource = '/events/' + eventId;  
@@ -34,7 +37,7 @@ angular.module('starter.services', [])
     }
 
     this.signUp = function(eventSecret){
-        $http.post(apiRoot + '/events/'+eventSecret+'/participants', { userId: 1})
+        $http.post('/events/'+eventSecret+'/participants', { userId: 1})
           .success(function(event){
               localStorage.setItem('/events/' + event._id, JSON.stringify(event));
               $state.go('event-confirm', {eventId: event._id });
@@ -52,7 +55,10 @@ angular.module('starter.services', [])
   // Might use a resource here that returns a JSON array
 
   // Some fake testing data
-  var chats = [];
+  var chats = [{
+    id: 1,
+    title: "someting"
+  }];
 
   return {
     all: function() {

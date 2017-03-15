@@ -23,13 +23,38 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+
+
+.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
+
+  //intercept and prefix
+  $httpProvider.interceptors.push(function ($q) {
+      return {
+          'request': function (config) {
+            // ignore template requests
+            if (config.url.substr(config.url.length - 5) == '.html') {
+              return config || $q.when(config);
+            }
+
+            config.url = 'http://battletime.herokuapp.com/api' + config.url;
+            return config || $q.when(config);
+          }
+      }
+    });
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
   $stateProvider
+
+  .state('event-confirm', {
+    url: '/event-confirm/:eventId',
+    templateUrl: 'templates/event-confirm.html',
+    controller: 'EventConfirmCtrl'
+  })
+
+
 
   // setup an abstract state for the tabs directive
     .state('tab', {
@@ -38,39 +63,42 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     templateUrl: 'templates/tabs.html'
   })
 
-  .state('event-confirm', {
-    url: '/event-confirm/:eventId',
-    templateUrl: 'templates/event-confirm.html',
-    controller: 'EventConfirmCtrl'
-  })
-
-  // Each tab has its own nav history stack:
-
-  .state('tab.dash', {
-    url: '/dash',
+  .state('tab.events', {  //EVENTS
+    url: '/events',
     views: {
-      'tab-dash': {
-        templateUrl: 'templates/tab-dash.html',
+      'tab-events': {
+        templateUrl: 'templates/tab-events.html',
         controller: 'DashCtrl'
       }
     }
   })
+  .state('tab.event-details', { //EVENTS/:ID
+    url: '/events/:eventId',
+    views: {
+      'tab-events': {
+          templateUrl: 'templates/event-details.html',
+          controller: 'EventDetailsCtrl'
+      }
+    }
+  })
 
-  .state('tab.chats', {
-      url: '/chats',
+
+  //BATTLES
+  .state('tab.battles', {
+      url: '/battles',
       views: {
-        'tab-chats': {
-          templateUrl: 'templates/tab-chats.html',
-          controller: 'ChatsCtrl'
+        'tab-battles': {
+          templateUrl: 'templates/tab-battles.html',
+          controller: 'BattlesCtrl'
         }
       }
     })
-    .state('tab.chat-detail', {
-      url: '/chats/:chatId',
+    .state('tab.battle-details', {
+      url: '/battles/:battleId',
       views: {
-        'tab-chats': {
-          templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl'
+        'tab-battles': {
+          templateUrl: 'templates/battle-detail.html',
+          controller: 'BattleDetailCtrl'
         }
       }
     })
@@ -86,6 +114,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/tab/events');
 
 });
