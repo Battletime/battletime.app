@@ -23,7 +23,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   });
 })
 
-
+//redirect to login if no token
+.run(function($rootScope, $state){
+    $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) { 
+        if(toState.name != "login" && !localStorage.getItem("jwt"))
+        {
+            event.preventDefault(); //stop navigating to new state
+            toState = $state.go("login");
+        }     
+    });
+})
 
 .config(function($stateProvider, $urlRouterProvider, $httpProvider) {
 
@@ -36,6 +45,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
               return config || $q.when(config);
             }
 
+            //config.url = 'http://localhost:3000/api' + config.url;
             config.url = 'http://battletime.herokuapp.com/api' + config.url;
             return config || $q.when(config);
           }
@@ -47,6 +57,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
   $stateProvider
+
+  .state('login', {
+    url: '/login',
+    templateUrl: 'templates/login.html',
+    controller: 'LoginController'
+  })
 
   .state('event-confirm', {
     url: '/event-confirm/:eventId',
@@ -114,6 +130,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/events');
+  $urlRouterProvider.otherwise('login');
 
 });

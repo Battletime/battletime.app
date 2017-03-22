@@ -16,6 +16,7 @@ angular.module('starter.controllers', [])
 
 })
 
+
 // ### EVENT CONFIRM CONTROLLER ### 
 .controller('EventConfirmCtrl', function($scope, $state, $stateParams, EventService){
   
@@ -42,6 +43,7 @@ angular.module('starter.controllers', [])
 // ### BATTLES CONTROLLER ### 
 .controller('BattlesCtrl', function($scope, Chats) {
   $scope.chats = Chats.all();
+
 })
 
 
@@ -51,8 +53,43 @@ angular.module('starter.controllers', [])
 })
 
 // ### BATTLES CONTROLLER ### 
-.controller('AccountCtrl', function($scope) {
+.controller('AccountCtrl', function($scope, $state) {
   $scope.settings = {
     enableFriends: true
   };
-});
+  $scope.logout = function(){
+      localStorage.setItem('jwt', undefined);//fake 
+      $state.go('login');
+  }
+})
+
+// ### Login CONTROLLER ### 
+.controller('LoginController', function($rootScope, $cordovaInAppBrowser, $scope, $state){
+    
+    function checkAndParseUrl(url){
+      if(url.indexOf("tokenProvider") != 0 ){
+        alert("token found");
+        var token = url.split('tokenProvider/')[1];
+        alert(token);
+        //localStorage.setItem('jwt', token);//fake 
+        return token;
+      }
+    }
+
+    $scope.login = function(){
+       alert("test");
+       //var authUrl = "http://localhost:3000/api/auth/google";
+       var authUrl =  "http://battletime.herokuapp.com/api/auth/google"; 
+
+       //in browser
+        var win = window.open(authUrl, '_system', 'location=yes');
+        win.addEventListener('loadstart', function (data) {
+            alert("Loadstart event");
+            if(checkAndParseUrl(data.url)){
+              win.close();
+              $state.go('tab.events');
+            }
+        });
+    }
+})
+
