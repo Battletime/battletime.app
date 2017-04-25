@@ -64,7 +64,7 @@ angular.module('starter.controllers', [])
 })
 
 // ### Login CONTROLLER ### 
-.controller('LoginController', function($rootScope, $cordovaInAppBrowser, $scope, $state){
+.controller('LoginController', function($rootScope, $cordovaInAppBrowser, $scope, $state, $http){
     
     function checkAndParseUrl(url){
       if(url.indexOf("tokenProvider") != 0 ){
@@ -74,6 +74,21 @@ angular.module('starter.controllers', [])
         //localStorage.setItem('jwt', token);//fake 
         return token;
       }
+    }
+
+    $scope.logina = function(){
+      $http.get('http://localhost:3000/api/auth/login', { withCredentials: true})
+        .then((res) => console.log(res) );
+    }
+
+    $scope.logout =function() {
+      $http.get('http://localhost:3000/api/auth/logout', { withCredentials: true})
+        .then((res) => console.log(res) );
+    }
+
+    $scope.profile = function(){
+      $http.get('http://localhost:3000/api/auth/profile', { withCredentials: true})
+        .then((res) => console.log(res) );
     }
 
     $scope.login = function(){

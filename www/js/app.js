@@ -46,7 +46,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
             }
 
             //config.url = 'http://localhost:3000/api' + config.url;
-            config.url = 'http://battletime.herokuapp.com/api' + config.url;
+            //config.url = 'http://battletime.herokuapp.com/api' + config.url;
             return config || $q.when(config);
           }
       }
@@ -73,9 +73,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
 
 
   // setup an abstract state for the tabs directive
-    .state('tab', {
+  .state('tab', {
     url: '/tab',
     abstract: true,
+    
     templateUrl: 'templates/tabs.html'
   })
 
