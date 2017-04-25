@@ -6,12 +6,25 @@ var sass = require('gulp-sass');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
+var gulp = require('gulp')
+var concat = require('gulp-concat')
+var watch = require('gulp-watch')
+var watch = require('gulp-copy')
 
 var paths = {
-  sass: ['./scss/**/*.scss']
+  sass: ['./scss/**/*.scss'],
+  js: ['app/**/*.js'],
+  html: ['app/**/*.html']
 };
 
-gulp.task('default', ['sass']);
+
+gulp.task('watch', ['sass'], function() {
+  gulp.watch(paths.sass, ['sass']);
+  gulp.watch(paths.js, ['js']);
+  gulp.watch(paths.html, ['html']);
+});
+
+gulp.task('default', ['sass', 'js', 'html', 'watch']);
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/ionic.app.scss')
@@ -26,9 +39,7 @@ gulp.task('sass', function(done) {
     .on('end', done);
 });
 
-gulp.task('watch', ['sass'], function() {
-  gulp.watch(paths.sass, ['sass']);
-});
+
 
 gulp.task('install', ['git-check'], function() {
   return bower.commands.install()
@@ -36,6 +47,18 @@ gulp.task('install', ['git-check'], function() {
       gutil.log('bower', gutil.colors.cyan(data.id), data.message);
     });
 });
+
+gulp.task('js', function () {
+  gulp.src(['app/**/app.js', 'app/**/*.js'])
+    .pipe(concat('app.js'))
+    .pipe(gulp.dest('./www/js'))
+})
+
+gulp.task('html', function () {
+    gulp.src('./app/**/*.html')
+      .pipe(gulp.dest('./www/templates'));
+})
+
 
 gulp.task('git-check', function(done) {
   if (!sh.which('git')) {

@@ -1,136 +1,288 @@
 // Ionic Starter App
+var app = angular.module('battletime-app', ['ionic', 'ionic-material']);
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-// 'starter.services' is found in services.js
-// 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', 'ngCordova'])
+app.run(function ($ionicPlatform) {
+    $ionicPlatform.ready(function () {
+        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+        // for form inputs)
 
-.run(function($ionicPlatform) {
-  $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
-
-    }
-    if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
-    }
-  });
+        if (window.cordova && window.cordova.plugins.Keyboard) {
+            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+        }
+        if (window.StatusBar) {
+            StatusBar.styleDefault();
+        }
+    });
 })
 
+
+angular.module('battletime-app')
+.service('authService', function($http, $q){
+    
+    var apiRoot = "https://battletime.herokuapp.com/";
+
+    var self = {};
+
+    var savedUser = localStorage.getItem("user");
+    self.user = savedUser ? JSON.parse(savedUser) : null;
+
+    function saveUser(user){
+        self.user = user;
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("lastUsername", user.username);
+    }
+
+    self.getLastUsedUsername = function(){
+        return localStorage.getItem("lastUsername");
+    }
+
+    self.Login = function(login){
+        var deferred = $q.defer();
+
+        $http.post(apiRoot + 'api/auth/login', login)
+            .then((response) => {
+                saveUser(response.data);
+                deferred.resolve(response.data)
+            },(response) =>{
+                deferred.reject(response.data)
+            });
+
+        return deferred.promise;
+    }
+    
+    self.Logout = function(){
+        localStorage.removeItem("user", undefined);
+        self.user = null;
+    }
+
+    self.Signup = function(signup){
+
+        var deferred = $q.defer();
+
+        if(signup.password != signup.repeat){
+             deferred.reject({ errors: ["The passwords do not match"]});
+             return deferred.promise;
+        };
+
+        $http.post(apiRoot + 'api/auth/signup', signup)
+            .then((response) => {
+                saveUser(response.data);
+                deferred.resolve(response.data)
+            },(response) =>{
+                deferred.reject(response.data)
+            });
+
+        return deferred.promise;
+    }
+
+    return self;
+
+})
+app = angular.module('battletime-app');
+
 //redirect to login if no token
-.run(function($rootScope, $state){
+app.run(function($rootScope, $state){
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) { 
-        if(toState.name != "login" && !localStorage.getItem("jwt"))
+        if(toState.name != "login" && !localStorage.getItem("user"))
         {
             event.preventDefault(); //stop navigating to new state
             toState = $state.go("login");
         }     
+        if(toState.name == "login" && localStorage.getItem("user"))
+        {
+            event.preventDefault(); //stop navigating to new state
+            toState = $state.go("app.portal");
+        }     
     });
 })
 
-.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
+app.config(function ($stateProvider, $urlRouterProvider) {
+    
 
-  //intercept and prefix
-  $httpProvider.interceptors.push(function ($q) {
-      return {
-          'request': function (config) {
-            // ignore template requests
-            if (config.url.substr(config.url.length - 5) == '.html') {
-              return config || $q.when(config);
+function addAppState(name){
+    $stateProvider.state('app.' + name, {
+        url: '/' + name,     
+        views: {
+            'menuContent': {
+                templateUrl: 'templates/'+name+'/'+ name +'.comp.html',
+                controller: name + 'Ctrl'
             }
+        }
+    });
+}
 
-            //config.url = 'http://localhost:3000/api' + config.url;
-            //config.url = 'http://battletime.herokuapp.com/api' + config.url;
-            return config || $q.when(config);
-          }
-      }
+addAppState("portal");
+addAppState("events");
+
+$stateProvider
+    .state('login', {
+        url: '/login',
+        templateUrl: 'templates/signup/signup.comp.html',
+        controller: 'signupCtrl'
+    })
+
+    .state('app', {
+        url: '/app',
+        abstract: true,
+        templateUrl: 'templates/app/app.comp.html',
+        controller: 'appCtrl'
+    })
+
+    .state('app.lists', {
+        url: '/lists',
+        views: {
+            'menuContent': {
+                templateUrl: 'templates/lists.html',
+                controller: 'ListsCtrl'
+            }
+        }
+    })
+
+    .state('app.ink', {
+        url: '/ink',
+        views: {
+            'menuContent': {
+                templateUrl: 'templates/ink.html',
+                controller: 'InkCtrl'
+            }
+        }
+    })
+
+    .state('app.motion', {
+        url: '/motion',
+        views: {
+            'menuContent': {
+                templateUrl: 'templates/motion.html',
+                controller: 'MotionCtrl'
+            }
+        }
+    })
+
+    .state('app.components', {
+        url: '/components',
+        views: {
+            'menuContent': {
+                templateUrl: 'templates/components.html',
+                controller: 'ComponentsCtrl'
+            }
+        }
+    })
+
+    .state('app.extensions', {
+        url: '/extensions',
+        views: {
+            'menuContent': {
+                templateUrl: 'templates/extensions.html',
+                controller: 'ExtensionsCtrl'
+            }
+        }
+    })
+    ;
+
+    // if none of the above states are matched, use this as the fallback
+    $urlRouterProvider.otherwise('/app/portal');
+});
+
+var app = angular.module('battletime-app');
+
+app.controller('appCtrl', function ($scope, $ionicModal, $ionicPopover, $timeout) {
+    // Form data for the login modal
+    $scope.loginData = {};
+
+    var navIcons = document.getElementsByClassName('ion-navicon');
+    for (var i = 0; i < navIcons.length; i++) {
+        navIcons.addEventListener('click', function () {
+            this.classList.toggle('active');
+        });
+    }
+
+    var fab = document.getElementById('fab');
+    fab.addEventListener('click', function () {
+        //location.href = 'https://twitter.com/satish_vr2011';
+        window.open('https://twitter.com/satish_vr2011', '_blank');
     });
 
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
-  $stateProvider
+    // .fromTemplate() method
+    var template = '<ion-popover-view>' +
+                    '   <ion-header-bar>' +
+                    '       <h1 class="title">My Popover Title</h1>' +
+                    '   </ion-header-bar>' +
+                    '   <ion-content class="padding">' +
+                    '       My Popover Contents' +
+                    '   </ion-content>' +
+                    '</ion-popover-view>';
 
-  .state('login', {
-    url: '/login',
-    templateUrl: 'templates/login.html',
-    controller: 'LoginController'
-  })
+    $scope.popover = $ionicPopover.fromTemplate(template, {
+        scope: $scope
+    });
+    $scope.closePopover = function () {
+        $scope.popover.hide();
+    };
+    //Cleanup the popover when we're done with it!
+    $scope.$on('$destroy', function () {
+        $scope.popover.remove();
+    });
+});
+var app = angular.module('battletime-app');
 
-  .state('event-confirm', {
-    url: '/event-confirm/:eventId',
-    templateUrl: 'templates/event-confirm.html',
-    controller: 'EventConfirmCtrl'
-  })
+app.controller('eventsCtrl', function ($scope, $ionicModal, $ionicPopover, $state, $timeout, authService) {
 
+    $scope.auth = authService;
 
-
-  // setup an abstract state for the tabs directive
-  .state('tab', {
-    url: '/tab',
-    abstract: true,
-    
-    templateUrl: 'templates/tabs.html'
-  })
-
-  .state('tab.events', {  //EVENTS
-    url: '/events',
-    views: {
-      'tab-events': {
-        templateUrl: 'templates/tab-events.html',
-        controller: 'DashCtrl'
-      }
+    $scope.logout = function(){
+        authService.Logout();
+        $state.go('login');
     }
-  })
-  .state('tab.event-details', { //EVENTS/:ID
-    url: '/events/:eventId',
-    views: {
-      'tab-events': {
-          templateUrl: 'templates/event-details.html',
-          controller: 'EventDetailsCtrl'
-      }
+
+});
+   
+
+var app = angular.module('battletime-app');
+
+app.controller('portalCtrl', function ($scope, $ionicModal, $ionicPopover, $state, $timeout, authService) {
+
+    $scope.auth = authService;
+
+    $scope.logout = function(){
+        authService.Logout();
+        $state.go('login');
     }
-  })
 
+});
+   
 
-  //BATTLES
-  .state('tab.battles', {
-      url: '/battles',
-      views: {
-        'tab-battles': {
-          templateUrl: 'templates/tab-battles.html',
-          controller: 'BattlesCtrl'
-        }
-      }
-    })
-    .state('tab.battle-details', {
-      url: '/battles/:battleId',
-      views: {
-        'tab-battles': {
-          templateUrl: 'templates/battle-detail.html',
-          controller: 'BattleDetailCtrl'
-        }
-      }
-    })
+var app = angular.module('battletime-app');
 
-  .state('tab.account', {
-    url: '/account',
-    views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl'
-      }
+app.controller('signupCtrl', function($scope, authService, $state){
+
+    $scope.first = true;
+    $scope.signup = {};
+    $scope.login = {};
+
+    $scope.sendSignup = function(){
+        authService.Signup($scope.signup).then(
+        (user) => {
+             $state.go('app.portal');
+        }, 
+        (response) => {
+            $scope.signup.errors = response.errors
+        });
+
+        //empty password fiels
+        $scope.signup.password = null;
+        $scope.signup.repeat = null; 
+        
     }
-  });
 
-  // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('login');
+    $scope.sendLogin = function(){
+        authService.Login($scope.login).then(
+        (user) => {
+            $state.go('app.portal');
+        }, 
+        (response) => {
+            $scope.login.errors = response.errors
+        });
+
+    }
 
 });

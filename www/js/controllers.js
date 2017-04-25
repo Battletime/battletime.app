@@ -1,5 +1,7 @@
 angular.module('starter.controllers', [])
 
+
+
 // ### DASHBOARD CONTROLLER ### 
 .controller('DashCtrl', function($scope, $cordovaBarcodeScanner, EventService) {
 
@@ -64,46 +66,15 @@ angular.module('starter.controllers', [])
 })
 
 // ### Login CONTROLLER ### 
-.controller('LoginController', function($rootScope, $cordovaInAppBrowser, $scope, $state, $http){
+.controller('LoginController', function($rootScope, $cordovaInAppBrowser, authService, $scope, $state, $http){
     
-    function checkAndParseUrl(url){
-      if(url.indexOf("tokenProvider") != 0 ){
-        alert("token found");
-        var token = url.split('tokenProvider/')[1];
-        alert(token);
-        //localStorage.setItem('jwt', token);//fake 
-        return token;
-      }
-    }
 
-    $scope.logina = function(){
-      $http.get('http://localhost:3000/api/auth/login', { withCredentials: true})
-        .then((res) => console.log(res) );
-    }
 
-    $scope.logout =function() {
-      $http.get('http://localhost:3000/api/auth/logout', { withCredentials: true})
-        .then((res) => console.log(res) );
-    }
-
-    $scope.profile = function(){
-      $http.get('http://localhost:3000/api/auth/profile', { withCredentials: true})
-        .then((res) => console.log(res) );
-    }
-
-    $scope.login = function(){
-       alert("test");
-       //var authUrl = "http://localhost:3000/api/auth/google";
-       var authUrl =  "http://battletime.herokuapp.com/api/auth/google"; 
-
-       //in browser
-        var win = window.open(authUrl, '_system', 'location=yes');
-        win.addEventListener('loadstart', function (data) {
-            alert("Loadstart event");
-            if(checkAndParseUrl(data.url)){
-              win.close();
-              $state.go('tab.events');
-            }
+   $scope.sendLogin = function(){
+        authService.Login($scope.login).then(
+        (user) => {}, 
+        (response) => {
+            $scope.login.errors = response.errors
         });
     }
 })
