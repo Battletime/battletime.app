@@ -49,7 +49,7 @@ $stateProvider
         controller: 'appCtrl'
     })
 
-    .state('app.event-confirm', {
+    .state('event-confirm', {
         url: '/app/event-confirm/:eventId',
         controller: 'eventConfirmCtrl',
         templateUrl: 'templates/events/event-confirm.comp.html', 

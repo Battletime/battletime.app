@@ -1,5 +1,5 @@
 // Ionic Starter App
-var app = angular.module('battletime-app', ['ionic', 'ionic-material']);
+var app = angular.module('battletime-app', ['ionic', 'ionic-material', 'ngCordova']);
 
 app.run(function ($ionicPlatform) {
     $ionicPlatform.ready(function () {
@@ -80,9 +80,10 @@ angular.module('battletime-app')
 angular.module('battletime-app')
 .service('config', function($http, $q){
     
-    return self = {
-        apiRoot: "https://battletime.herokuapp.com/api"
-    };
+    return {
+        //apiRoot: "https://battletime.herokuapp.com/api",
+        apiRoot: "http://localhost:3000/api"
+    }
 
 });
 angular.module('battletime-app')
@@ -180,7 +181,7 @@ $stateProvider
         controller: 'appCtrl'
     })
 
-    .state('app.event-confirm', {
+    .state('event-confirm', {
         url: '/app/event-confirm/:eventId',
         controller: 'eventConfirmCtrl',
         templateUrl: 'templates/events/event-confirm.comp.html', 
@@ -297,34 +298,36 @@ app.controller('eventConfirmCtrl', function ($scope, $stateParams, $ionicModal, 
 });
 var app = angular.module('battletime-app');
 
-app.controller('eventsCtrl', function ($scope, $ionicModal, $ionicPopover, $state, $timeout, authService, $http, config) {
+app.controller('eventsCtrl', function ($scope, $ionicModal, $cordovaBarcodeScanner, $state, $timeout, authService, $http, config) {
 
-    $scope.auth = authService;
+    $scope.auth;
     $scope.events = [];
 
     function init(){
-        if($scope.auth.service){
-            EventService.getMyEvents().then( (events) => $scope.events= events);
+        $scope.auth = authService;
+        if($scope.auth.user){
+            $scope.getMyEvents();
         }
     }
 
     $scope.getMyEvents = function(){
-        $http.get('/users/' + auth.user._id + '/events')
+        $http.get(config.apiRoot + '/users/' + authService.user._id + '/events')
             .then( (response) => {
                 $scope.events = response.data;
             });
-        
     }
 
     $scope.scanEventCode = function(){
         $cordovaBarcodeScanner.scan().then(function(result) {
             var eventSecret = result.text;
-            $http.post(config.apiRoot + '/events/' + eventSecret + '/participants', { userId: 1})
+            $http.post(config.apiRoot + '/events/secret/' + eventSecret, { userId: authService.user._id})
                 .success(function(event){
                     $state.go('event-confirm', {eventId: event._id });
                 });
         });
     }
+
+    init();
 
 });
    

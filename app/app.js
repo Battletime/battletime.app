@@ -1,5 +1,5 @@
 // Ionic Starter App
-var app = angular.module('battletime-app', ['ionic', 'ionic-material']);
+var app = angular.module('battletime-app', ['ionic', 'ionic-material', 'ngCordova']);
 
 app.run(function ($ionicPlatform) {
     $ionicPlatform.ready(function () {
