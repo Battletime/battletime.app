@@ -14,4 +14,3 @@ app.run(function ($ionicPlatform) {
         }
     });
 })
-

@@ -33,6 +33,7 @@ function addAppState(name){
 
 addAppState("portal");
 addAppState("events");
+addAppState("settings");
 
 $stateProvider
     .state('login', {
@@ -46,6 +47,12 @@ $stateProvider
         abstract: true,
         templateUrl: 'templates/app/app.comp.html',
         controller: 'appCtrl'
+    })
+
+    .state('app.event-confirm', {
+        url: '/app/event-confirm/:eventId',
+        controller: 'eventConfirmCtrl',
+        templateUrl: 'templates/events/event-confirm.comp.html', 
     })
 
     .state('app.lists', {

@@ -10,9 +10,9 @@
                 <button class="button button-icon button-clear ion-android-more-vertical" id="menu-popover" ng-click="popover.show($event)"></button>
             </ion-nav-buttons>-->
         </ion-nav-bar>
-        <button id="fab" class="button button-positive button-fab button-fab-bottom-right">
+        <!--<button id="fab" class="button button-positive button-fab button-fab-bottom-right">
             <i class="icon ion-social-twitter"></i>
-        </button>
+        </button>-->
         <ion-nav-view name="menuContent"></ion-nav-view>
     </ion-side-menu-content>
     <ion-side-menu side="left">
@@ -23,14 +23,19 @@
             </div>
         </ion-header-bar>
         <ion-content class="stable-bg has-expanded-header">
-            <ion-list>
-                <ion-item nav-clear menu-close ui-sref="app.portal">
-                   Portal
+            <ion-list class="list">
+                <ion-item class="item item-icon-left" nav-clear menu-close ui-sref="app.portal">
+                   <i class="icon ion-home"></i> Portal
                 </ion-item>
-                <ion-item nav-clear menu-close ui-sref="app.events">
-                    Events
+                <ion-item class="item item-icon-left" nav-clear menu-close ui-sref="app.events">
+                     <i class="icon ion-flag"></i> Events
+                </ion-item>
+                  <div class="item item-divider"></div>
+                <ion-item class="item item-icon-left" nav-clear menu-close ui-sref="app.settings">
+                     <i class="icon ion-gear-a"></i> Settings
                 </ion-item>
             </ion-list>
+
         </ion-content>
     </ion-side-menu>
 </ion-side-menus>

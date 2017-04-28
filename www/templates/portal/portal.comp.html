@@ -3,7 +3,81 @@
         <div class="bar bar-subheader bar-stable static text-center">
             <strong class="title">Welcome {{auth.user.username}}</strong>
         </div>
-        <button class="button button-assertive" ng-click="logout()">Logout</button>
+
+        <div class="im-wrapper">
+
+            <div ng-show="(battles | filter:{ status: { id: 1 } }).length != 0">
+                <h4 class="border-bottom">
+                    <i class="icon ion-android-color-palette"></i>      
+                    In progress
+                </h4>
+
+                <div class="list" ng-show="battles">
+                        <a class="item item-avatar my-battles" ng-repeat="battle in battles | filter:{ status: { id: 1 } }  track by $index">
+                            <img src="img/material1.jpg">
+
+                            <span ng-repeat="user in battle.participants track by $index">
+                            {{user._id == auth.user._id ? 'You' : user.username }}
+                            <span class="text-assertive" ng-show="$index < battle.participants.length -1">V.S.</span>
+                            </span>
+                            
+                            <p>
+                                {{battle.event.name ? battle.event.name : 'Free battle'}}
+                            </p>
+                        </a>
+                </div>
+            </div>
+                
+            <h4 class="border-bottom">
+                <i class="icon ion-clock"></i>      
+                Up and comming
+            </h4>
+
+            <div ng-show="(battles | filter:{ status: { id: 0 } }).length == 0">
+                <p class="text-calm">No up and comming battles</p>
+            </div>
+
+            <div class="list" ng-show="battles">
+                <a class="item item-avatar my-battles" ng-repeat="battle in battles | filter:{ status: { id: 0 } } track by $index ">
+                    <img src="img/material1.jpg">
+
+                        <span ng-repeat="user in battle.participants track by $index">
+                            {{user._id == auth.user._id ? 'You' : user.username }}
+                            <span class="text-assertive" ng-show="$index < battle.participants.length -1">V.S.</span>
+                        </span>
+                    </h2>
+                    <p>
+                        {{battle.event.name ? battle.event.name : 'Free battle'}}
+                    </p>
+                </a>
+            </div>
+
+          
+            <h4 class="border-bottom">
+                <i class="icon ion-trophy"></i>      
+                Previous battles
+            </h4>
+
+            <div ng-show="(battles | filter:{ status: { id: 2 } }).length == 0">
+                <p class="text-calm">No up and comming battles</p>
+            </div>
+
+            <div class="list" ng-show="battles">
+                <a class="item item-avatar my-battles" ng-repeat="battle in battles | filter:{ status: { id: 2 } } track by $index">
+                    <img src="img/material1.jpg">
+
+                        <span ng-repeat="user in battle.participants track by $index">
+                            {{user._id == auth.user._id ? 'You' : user.username }}
+                            <span class="text-assertive" ng-show="$index < battle.participants.length -1">V.S.</span>
+                        </span>
+                    </h2>
+                    <p>
+                        {{battle.event.name ? battle.event.name : 'Free battle'}}
+                    </p>
+                </a>
+            </div>
+        </div>
+
     </ion-content>
 </ion-view>
 

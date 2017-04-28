@@ -15,7 +15,6 @@ app.run(function ($ionicPlatform) {
     });
 })
 
-
 angular.module('battletime-app')
 .service('authService', function($http, $q){
     
@@ -78,6 +77,58 @@ angular.module('battletime-app')
     return self;
 
 })
+angular.module('battletime-app')
+.service('config', function($http, $q){
+    
+    return self = {
+        apiRoot: "https://battletime.herokuapp.com/api"
+    };
+
+});
+angular.module('battletime-app')
+.service('CachedHttp', function($q, $http){
+
+  this.getResource = function(resource){
+
+    var deferred = $q.defer();
+    var cache = localStorage.getItem(resource);
+
+    //ff cache verwijderen, werkt nog niet helemaal naar behoren
+    // if(cache) {
+    //   var cacheObject = 
+    //   deferred.resolve(angular.fromJson(cache));
+    //   return deferred.promise; //no need to continue
+    // } 
+    
+    $http.get(resource).then((result) => {
+      localStorage.setItem(resource, JSON.stringify(result.data));
+      deferred.resolve(result.data);
+    });
+    
+    return deferred.promise;
+  }
+
+})
+
+.service('EventService', function(CachedHttp, config, $state, $http){
+
+    // this.getMyEvents = function(c){
+    //   $http.gget()
+    //   var resource = '/users/'/events';  
+    //   return CachedHttp.getResource(resource);
+    // }
+
+    // this.getDetails = function(eventId){
+    //   var resource = '/events/' + eventId;  
+    //   return CachedHttp.getResource(resource);
+    // }
+
+    // this.signUp = function(eventSecret){
+      
+    // }
+
+})
+
 app = angular.module('battletime-app');
 
 //redirect to login if no token
@@ -113,6 +164,7 @@ function addAppState(name){
 
 addAppState("portal");
 addAppState("events");
+addAppState("settings");
 
 $stateProvider
     .state('login', {
@@ -126,6 +178,12 @@ $stateProvider
         abstract: true,
         templateUrl: 'templates/app/app.comp.html',
         controller: 'appCtrl'
+    })
+
+    .state('app.event-confirm', {
+        url: '/app/event-confirm/:eventId',
+        controller: 'eventConfirmCtrl',
+        templateUrl: 'templates/events/event-confirm.comp.html', 
     })
 
     .state('app.lists', {
@@ -196,11 +254,11 @@ app.controller('appCtrl', function ($scope, $ionicModal, $ionicPopover, $timeout
         });
     }
 
-    var fab = document.getElementById('fab');
-    fab.addEventListener('click', function () {
-        //location.href = 'https://twitter.com/satish_vr2011';
-        window.open('https://twitter.com/satish_vr2011', '_blank');
-    });
+    // var fab = document.getElementById('fab');
+    // fab.addEventListener('click', function () {
+    //     //location.href = 'https://twitter.com/satish_vr2011';
+    //     window.open('https://twitter.com/satish_vr2011', '_blank');
+    // });
 
     // .fromTemplate() method
     var template = '<ion-popover-view>' +
@@ -225,13 +283,47 @@ app.controller('appCtrl', function ($scope, $ionicModal, $ionicPopover, $timeout
 });
 var app = angular.module('battletime-app');
 
-app.controller('eventsCtrl', function ($scope, $ionicModal, $ionicPopover, $state, $timeout, authService) {
+app.controller('eventConfirmCtrl', function ($scope, $stateParams, $ionicModal, $ionicPopover, $state, $timeout, authService, $http, config) {
+
+    $scope.eventId;
+
+    function init(){
+        $scope.eventId = $stateParams.eventId
+    }
+
+    init();
+
+
+});
+var app = angular.module('battletime-app');
+
+app.controller('eventsCtrl', function ($scope, $ionicModal, $ionicPopover, $state, $timeout, authService, $http, config) {
 
     $scope.auth = authService;
+    $scope.events = [];
 
-    $scope.logout = function(){
-        authService.Logout();
-        $state.go('login');
+    function init(){
+        if($scope.auth.service){
+            EventService.getMyEvents().then( (events) => $scope.events= events);
+        }
+    }
+
+    $scope.getMyEvents = function(){
+        $http.get('/users/' + auth.user._id + '/events')
+            .then( (response) => {
+                $scope.events = response.data;
+            });
+        
+    }
+
+    $scope.scanEventCode = function(){
+        $cordovaBarcodeScanner.scan().then(function(result) {
+            var eventSecret = result.text;
+            $http.post(config.apiRoot + '/events/' + eventSecret + '/participants', { userId: 1})
+                .success(function(event){
+                    $state.go('event-confirm', {eventId: event._id });
+                });
+        });
     }
 
 });
@@ -239,14 +331,46 @@ app.controller('eventsCtrl', function ($scope, $ionicModal, $ionicPopover, $stat
 
 var app = angular.module('battletime-app');
 
-app.controller('portalCtrl', function ($scope, $ionicModal, $ionicPopover, $state, $timeout, authService) {
+app.controller('portalCtrl', function ($scope, $ionicModal, $ionicPopover, $http, $state, $timeout, authService, config) {
 
-    $scope.auth = authService;
+
+    $scope.battles;
+
+    function init(){
+        $scope.auth = authService;
+        if(authService.user){
+            $scope.getMyBattles();
+        }
+    }
+
+    $scope.getMyBattles = function(){
+        $http.get(config.apiRoot + '/users/' + $scope.auth.user._id + '/battles')
+            .then((response) => {
+                $scope.battles = response.data;
+            })
+    }
+
+    init();
+
+});
+   
+
+var app = angular.module('battletime-app');
+
+app.controller('settingsCtrl', function ($scope, $ionicModal, $ionicPopover, $http, $state, $timeout, authService, config) {
+
+
+
+    function init(){
+
+    }
 
     $scope.logout = function(){
         authService.Logout();
         $state.go('login');
     }
+
+    init();
 
 });
    
