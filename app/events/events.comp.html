@@ -21,6 +21,8 @@
 
         <div class="im-wrapper" ng-show="events.length > 0">
 
+            <ion-refresher pulling-text="Pull to refresh" on-refresh="getMyEvents()"></ion-refresher>
+
             <h4 class="border-bottom">
                 <i class="icon ion-flag"></i>      
                 My events

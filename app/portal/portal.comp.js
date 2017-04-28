@@ -16,6 +16,7 @@ app.controller('portalCtrl', function ($scope, $ionicModal, $ionicPopover, $http
         $http.get(config.apiRoot + '/users/' + $scope.auth.user._id + '/battles')
             .then((response) => {
                 $scope.battles = response.data;
+                $scope.$broadcast('scroll.refreshComplete');
             })
     }
 

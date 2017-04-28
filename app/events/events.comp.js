@@ -16,6 +16,7 @@ app.controller('eventsCtrl', function ($scope, $ionicModal, $cordovaBarcodeScann
         $http.get(config.apiRoot + '/users/' + authService.user._id + '/events')
             .then( (response) => {
                 $scope.events = response.data;
+                $scope.$broadcast('scroll.refreshComplete');
             });
     }
 

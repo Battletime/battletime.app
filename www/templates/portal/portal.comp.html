@@ -4,6 +4,8 @@
             <strong class="title">Welcome {{auth.user.username}}</strong>
         </div>
 
+        <ion-refresher pulling-text="Pull to refresh" on-refresh="getMyBattles()"></ion-refresher>
+
         <div class="im-wrapper">
 
             <div ng-show="(battles | filter:{ status: { id: 1 } }).length != 0">

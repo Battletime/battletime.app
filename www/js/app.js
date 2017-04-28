@@ -81,8 +81,8 @@ angular.module('battletime-app')
 .service('config', function($http, $q){
     
     return {
-        //apiRoot: "https://battletime.herokuapp.com/api",
-        apiRoot: "http://localhost:3000/api"
+        apiRoot: "https://battletime.herokuapp.com/api",
+        //apiRoot: "http://localhost:3000/api"
     }
 
 });
@@ -314,6 +314,7 @@ app.controller('eventsCtrl', function ($scope, $ionicModal, $cordovaBarcodeScann
         $http.get(config.apiRoot + '/users/' + authService.user._id + '/events')
             .then( (response) => {
                 $scope.events = response.data;
+                $scope.$broadcast('scroll.refreshComplete');
             });
     }
 
@@ -350,6 +351,7 @@ app.controller('portalCtrl', function ($scope, $ionicModal, $ionicPopover, $http
         $http.get(config.apiRoot + '/users/' + $scope.auth.user._id + '/battles')
             .then((response) => {
                 $scope.battles = response.data;
+                $scope.$broadcast('scroll.refreshComplete');
             })
     }
 
