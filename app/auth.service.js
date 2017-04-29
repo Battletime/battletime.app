@@ -19,7 +19,7 @@ angular.module('battletime-app')
     self.Login = function(login){
         var deferred = $q.defer();
 
-        $http.post(config.apiRoot + 'api/auth/login', login)
+        $http.post(config.apiRoot + '/auth/login', login)
             .then((response) => {
                 saveUser(response.data);
                 deferred.resolve(response.data)
@@ -44,7 +44,7 @@ angular.module('battletime-app')
              return deferred.promise;
         };
 
-        $http.post(config.apiRoot + 'api/auth/signup', signup)
+        $http.post(config.apiRoot + '/auth/signup', signup)
             .then((response) => {
                 saveUser(response.data);
                 deferred.resolve(response.data)
