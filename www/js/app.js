@@ -16,10 +16,8 @@ app.run(function ($ionicPlatform) {
 })
 
 angular.module('battletime-app')
-.service('authService', function($http, $q){
+.service('authService', function($http, $q, config){
     
-    var apiRoot = "https://battletime.herokuapp.com/";
-
     var self = {};
 
     var savedUser = localStorage.getItem("user");
@@ -38,7 +36,7 @@ angular.module('battletime-app')
     self.Login = function(login){
         var deferred = $q.defer();
 
-        $http.post(apiRoot + 'api/auth/login', login)
+        $http.post(config.apiRoot + 'api/auth/login', login)
             .then((response) => {
                 saveUser(response.data);
                 deferred.resolve(response.data)
@@ -63,7 +61,7 @@ angular.module('battletime-app')
              return deferred.promise;
         };
 
-        $http.post(apiRoot + 'api/auth/signup', signup)
+        $http.post(config.apiRoot + 'api/auth/signup', signup)
             .then((response) => {
                 saveUser(response.data);
                 deferred.resolve(response.data)
@@ -81,8 +79,8 @@ angular.module('battletime-app')
 .service('config', function($http, $q){
     
     return {
-        //apiRoot: "https://battletime.herokuapp.com/api",
-        apiRoot: "http://localhost:3000/api"
+        apiRoot: "https://battletime.herokuapp.com/api",
+        //apiRoot: "http://localhost:3000/api"
     }
 
 });
