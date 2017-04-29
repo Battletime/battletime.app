@@ -34,6 +34,7 @@ function addAppState(name){
 addAppState("portal");
 addAppState("events");
 addAppState("settings");
+addAppState("battles");
 
 $stateProvider
     .state('login', {
@@ -47,6 +48,13 @@ $stateProvider
         abstract: true,
         templateUrl: 'templates/app/app.comp.html',
         controller: 'appCtrl'
+    })
+
+
+    .state('challange', {
+        url: '/app/challange',
+        controller: 'challengeCtrl',
+        templateUrl: 'templates/battles/add-battle.comp.html', 
     })
 
     .state('event-confirm', {

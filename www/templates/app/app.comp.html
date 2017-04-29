@@ -10,9 +10,9 @@
                 <button class="button button-icon button-clear ion-android-more-vertical" id="menu-popover" ng-click="popover.show($event)"></button>
             </ion-nav-buttons>-->
         </ion-nav-bar>
-        <!--<button id="fab" class="button button-positive button-fab button-fab-bottom-right">
-            <i class="icon ion-social-twitter"></i>
-        </button>-->
+        <button id="fab" class="button button-positive button-fab button-fab-bottom-right" ng-click="randomBattle()">
+            <i class="icon ion-help"></i>
+        </button>
         <ion-nav-view name="menuContent"></ion-nav-view>
     </ion-side-menu-content>
     <ion-side-menu side="left">
@@ -29,6 +29,9 @@
                 </ion-item>
                 <ion-item class="item item-icon-left" nav-clear menu-close ui-sref="app.events">
                      <i class="icon ion-flag"></i> Events
+                </ion-item>
+                <ion-item class="item item-icon-left" nav-clear menu-close ui-sref="app.battles">
+                     <i class="icon ion-flag"></i> Battles
                 </ion-item>
                   <div class="item item-divider"></div>
                 <ion-item class="item item-icon-left" nav-clear menu-close ui-sref="app.settings">

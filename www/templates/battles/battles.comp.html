@@ -6,25 +6,6 @@
 
         <ion-refresher pulling-text="Pull to refresh" on-refresh="getMyBattles()"></ion-refresher>
 
-        <div class="text-center challenge">
-            
-            <buttton ng-show="!randomChallanger && !loading" class="button button-raised button-assertive" ng-click="getRandomBattle()">
-                Random challanger
-            </buttton>       
-        
-            <div ng-show="loading">
-                <p class="text-primary">{{messages[msgIndex]}}</p>
-            </div>
-
-            <div ng-show="randomChallanger && !loading">
-                <p>You <span class="text-assertive">V.S.</span> {{randomChallanger.participants[1].username}}</p>
-                <butto ng-click="addChallenger()" class="button button button-small button-calm">Let's go!</button>
-            </div>
-
-        </div>
-
-         <hr>
-
         <div class="im-wrapper">
 
             <div ng-show="(battles | filter:{ status: { id: 1 } }).length != 0">
@@ -72,6 +53,32 @@
                     </p>
                 </a>
             </div>
+
+          
+            <h4 class="border-bottom">
+                <i class="icon ion-trophy"></i>      
+                Previous battles
+            </h4>
+
+            <div ng-show="(battles | filter:{ status: { id: 2 } }).length == 0">
+                <p class="text-calm">No up and comming battles</p>
+            </div>
+
+            <div class="list" ng-show="battles">
+                <a class="item item-avatar my-battles" ng-repeat="battle in battles | filter:{ status: { id: 2 } } track by $index">
+                    <img src="img/material1.jpg">
+
+                        <span ng-repeat="user in battle.participants track by $index">
+                            {{user._id == auth.user._id ? 'You' : user.username }}
+                            <span class="text-assertive" ng-show="$index < battle.participants.length -1">V.S.</span>
+                        </span>
+                    </h2>
+                    <p>
+                        {{battle.event.name ? battle.event.name : 'Free battle'}}
+                    </p>
+                </a>
+            </div>
+        </div>
 
     </ion-content>
 </ion-view>

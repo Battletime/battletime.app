@@ -68,8 +68,6 @@ angular.module('starter.controllers', [])
 // ### Login CONTROLLER ### 
 .controller('LoginController', function($rootScope, $cordovaInAppBrowser, authService, $scope, $state, $http){
     
-
-
    $scope.sendLogin = function(){
         authService.Login($scope.login).then(
         (user) => {}, 

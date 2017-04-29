@@ -3,3 +3,16 @@
     padding: 2px;
     min-height: 0px;
 }
+
+.challenge{
+    padding:30px;
+}
+
+.challenge .button{
+    width:100%;
+  
+}
+
+.challenge input{
+    width:100%;
+}

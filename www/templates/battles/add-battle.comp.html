@@ -1,0 +1,45 @@
+<ion-view view-title="Battletime">
+    <ion-content class="text-center">
+        <div class="bar bar-subheader bar-stable static text-center">
+            <strong class="title">Challange someone</strong>
+        </div>
+
+        <div class="im-wrapper text-center">
+
+           
+
+            <div class="challenge">
+
+                <p>Challenge a random opponent!</p>
+
+                <buttton class="button button-raised button-assertive">Random Challenger</buttton>
+            </div>
+
+            <hr>
+
+            <div class="challenge">
+
+                <p>Challenge a specific opponent!</p>
+
+                <ui-select  ng-model="newBattle.participants" theme="bootstrap">
+                    <ui-select-match placeholder="Select or search a person in the list..."> {{$item.username}}</ui-select-match>
+                    <ui-select-choices repeat="item in users | filter: $select.search track by item.username">
+                        <div ng-bind-html="item.username | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
+
+                <!--<buttton class="button button-raised button-calm">Challange</buttton>-->
+            </div>
+
+            <hr>
+
+            <buttton class="button button-assertive">Cancel</buttton>
+
+        </div>
+
+        
+    
+    </ion-content>
+</ion-view>
+
+          

@@ -1,5 +1,5 @@
 // Ionic Starter App
-var app = angular.module('battletime-app', ['ionic', 'ionic-material', 'ngCordova']);
+var app = angular.module('battletime-app', ['ionic', 'ionic-material', 'ngCordova', 'ui.select', 'ngSanitize']);
 
 app.run(function ($ionicPlatform) {
     $ionicPlatform.ready(function () {
@@ -81,8 +81,8 @@ angular.module('battletime-app')
 .service('config', function($http, $q){
     
     return {
-        apiRoot: "https://battletime.herokuapp.com/api",
-        //apiRoot: "http://localhost:3000/api"
+        //apiRoot: "https://battletime.herokuapp.com/api",
+        apiRoot: "http://localhost:3000/api"
     }
 
 });
@@ -166,6 +166,7 @@ function addAppState(name){
 addAppState("portal");
 addAppState("events");
 addAppState("settings");
+addAppState("battles");
 
 $stateProvider
     .state('login', {
@@ -179,6 +180,13 @@ $stateProvider
         abstract: true,
         templateUrl: 'templates/app/app.comp.html',
         controller: 'appCtrl'
+    })
+
+
+    .state('challange', {
+        url: '/app/challange',
+        controller: 'challengeCtrl',
+        templateUrl: 'templates/battles/add-battle.comp.html', 
     })
 
     .state('event-confirm', {
@@ -255,11 +263,16 @@ app.controller('appCtrl', function ($scope, $ionicModal, $ionicPopover, $timeout
         });
     }
 
+    $scope.randomBattle = function(){
+        
+    }
+
     // var fab = document.getElementById('fab');
     // fab.addEventListener('click', function () {
     //     //location.href = 'https://twitter.com/satish_vr2011';
     //     window.open('https://twitter.com/satish_vr2011', '_blank');
     // });
+    
 
     // .fromTemplate() method
     var template = '<ion-popover-view>' +
@@ -282,6 +295,76 @@ app.controller('appCtrl', function ($scope, $ionicModal, $ionicPopover, $timeout
         $scope.popover.remove();
     });
 });
+var app = angular.module('battletime-app');
+
+app.controller('challengeCtrl', function ($scope, $ionicModal, $ionicPopover, $http, $state, $timeout, authService, config) {
+
+    $scope.battles;
+    $scope.users;
+    $scope.newBattle = {
+        participants: []
+    };
+
+    function init(){
+        $scope.auth = authService;
+        if(authService.user){
+            $scope.getMyBattles();
+            $scope.getUsers();
+        }
+    }
+
+    $scope.getMyBattles = function(){
+        $http.get(config.apiRoot + '/users/' + $scope.auth.user._id + '/battles')
+            .then((response) => {
+                $scope.battles = response.data;
+                $scope.$broadcast('scroll.refreshComplete');
+            })
+    }
+
+    $scope.getUsers = function(){
+         $http.get(config.apiRoot + '/users')
+            .then((response) => {
+                $scope.users = response.data;
+            }, onError);
+    }
+
+    function onError(response){
+        console.log(response.data);
+    }
+
+
+    init();
+
+});
+   
+
+var app = angular.module('battletime-app');
+
+app.controller('battlesCtrl', function ($scope, $ionicModal, $ionicPopover, $http, $state, $timeout, authService, config) {
+
+
+    $scope.battles;
+
+    function init(){
+        $scope.auth = authService;
+        if(authService.user){
+            $scope.getMyBattles();
+        }
+    }
+
+    $scope.getMyBattles = function(){
+        $http.get(config.apiRoot + '/users/' + $scope.auth.user._id + '/battles')
+            .then((response) => {
+                $scope.battles = response.data;
+                $scope.$broadcast('scroll.refreshComplete');
+            })
+    }
+
+    init();
+
+});
+   
+
 var app = angular.module('battletime-app');
 
 app.controller('eventConfirmCtrl', function ($scope, $stateParams, $ionicModal, $ionicPopover, $state, $timeout, authService, $http, config) {
@@ -335,16 +418,55 @@ app.controller('eventsCtrl', function ($scope, $ionicModal, $cordovaBarcodeScann
 
 var app = angular.module('battletime-app');
 
-app.controller('portalCtrl', function ($scope, $ionicModal, $ionicPopover, $http, $state, $timeout, authService, config) {
+app.controller('portalCtrl', function ($scope, $ionicModal, $window, $ionicPopover, $http, $state, $timeout, authService, config) {
 
+    $scope.messages = [
+        "matje uitrollen",
+        "schoentjes poetsen",
+        "lijpe breakbeats zoeken",
+        "rek & strek",
+        "Bragge en boaste",
+        "Uprocke",
+    ]
 
     $scope.battles;
+    var counter = 0;
+    var timeoutId;
 
     function init(){
         $scope.auth = authService;
         if(authService.user){
             $scope.getMyBattles();
         }
+    }
+ 
+    $scope.getRandomBattle = function(){
+        counter = 0;
+        $scope.randomChallanger = null;
+        $scope.loading = true; 
+        $scope.msgIndex = getRandomInt(0, $scope.messages.length-1);
+
+          $http.post(config.apiRoot + '/battles/random/' + authService.user._id)
+            .then((response) => {
+                $scope.randomChallanger = response.data;             
+            })
+
+        timeoutId = $window.setInterval(() => {
+            counter++;
+            $scope.msgIndex = getRandomInt(0, $scope.messages.length-1);
+            if(counter > 5 && $scope.randomChallanger){               
+                window.clearTimeout(timeoutId);
+                $scope.loading = false;           
+            }
+            $scope.$apply();
+        }, 1000); 
+
+      
+    }
+
+    $scope.addChallenger = function(){
+        $scope.battles.push($scope.randomChallanger);
+        $scope.randomChallanger = null;
     }
 
     $scope.getMyBattles = function(){
@@ -353,6 +475,10 @@ app.controller('portalCtrl', function ($scope, $ionicModal, $ionicPopover, $http
                 $scope.battles = response.data;
                 $scope.$broadcast('scroll.refreshComplete');
             })
+    }
+
+    function getRandomInt(min, max) {
+         return Math.round(Math.random() * (max - min) + min);
     }
 
     init();
