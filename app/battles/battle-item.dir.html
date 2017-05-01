@@ -1,0 +1,12 @@
+ <a class="item item-avatar my-battles" ui-sref="app.battle-details({battleId: battle.id})">
+    <img src="img/material1.jpg">
+
+    <span ng-repeat="user in battle.participants track by $index">
+        {{user._id == auth.user._id ? 'You' : user.username }}
+        <span class="text-assertive" ng-show="$index < battle.participants.length -1">V.S.</span>
+    </span>
+    
+    <p>
+        {{battle.event.name ? battle.event.name : 'Free battle'}}
+    </p>
+</a>

@@ -1,0 +1,34 @@
+<ion-view view-title="Battletime">
+    <ion-content>
+        <div class="bar bar-subheader bar-stable static text-center">
+            <strong class="title">Battle details</strong>
+        </div>
+
+        <ion-refresher pulling-text="Pull to refresh" on-refresh="getBattle()"></ion-refresher>
+
+        <div ng-show="battle">
+
+             <a class="item item-avatar my-battles">
+                <img src="img/material1.jpg">
+
+                <span ng-repeat="user in battle.participants track by $index">
+                    {{user._id == auth.user._id ? 'You' : user.username }}
+                    <span class="text-assertive" ng-show="$index < battle.participants.length -1">V.S.</span>
+                </span>
+                
+                <p>
+                    {{battle.event.name ? battle.event.name : 'Free battle'}}
+                </p>
+            </a>
+        </div>
+            
+
+        <div ng-show="battle.event" class="im-wrapper">
+            <h4 class="border-bottom">
+                <i class="icon ion-android-color-palette"></i>      
+                Votes
+            </h4>
+        </div>
+
+    </ion-content>
+</ion-view>

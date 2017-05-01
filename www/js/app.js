@@ -161,6 +161,7 @@ function addAppState(name){
     });
 }
 
+//default states
 addAppState("portal");
 addAppState("events");
 addAppState("settings");
@@ -180,7 +181,6 @@ $stateProvider
         controller: 'appCtrl'
     })
 
-
     .state('challange', {
         url: '/app/challange',
         controller: 'challengeCtrl',
@@ -193,56 +193,16 @@ $stateProvider
         templateUrl: 'templates/events/event-confirm.comp.html', 
     })
 
-    .state('app.lists', {
-        url: '/lists',
+    .state('app.battle-details', {
+        url: '/details/:battleId',     
         views: {
             'menuContent': {
-                templateUrl: 'templates/lists.html',
-                controller: 'ListsCtrl'
+                templateUrl: 'templates/battles/battle-details.comp.html',
+                controller: 'battleDetailsCtrl'
             }
         }
+        
     })
-
-    .state('app.ink', {
-        url: '/ink',
-        views: {
-            'menuContent': {
-                templateUrl: 'templates/ink.html',
-                controller: 'InkCtrl'
-            }
-        }
-    })
-
-    .state('app.motion', {
-        url: '/motion',
-        views: {
-            'menuContent': {
-                templateUrl: 'templates/motion.html',
-                controller: 'MotionCtrl'
-            }
-        }
-    })
-
-    .state('app.components', {
-        url: '/components',
-        views: {
-            'menuContent': {
-                templateUrl: 'templates/components.html',
-                controller: 'ComponentsCtrl'
-            }
-        }
-    })
-
-    .state('app.extensions', {
-        url: '/extensions',
-        views: {
-            'menuContent': {
-                templateUrl: 'templates/extensions.html',
-                controller: 'ExtensionsCtrl'
-            }
-        }
-    })
-    ;
 
     // if none of the above states are matched, use this as the fallback
     $urlRouterProvider.otherwise('/app/portal');
@@ -336,6 +296,38 @@ app.controller('challengeCtrl', function ($scope, $ionicModal, $ionicPopover, $h
 });
    
 
+var app = angular.module('battletime-app');
+
+app.controller('battleDetailsCtrl', function ($scope, $http, config, $stateParams) {
+
+    $scope.battleId;
+
+    function init(){
+        $scope.battleId = $stateParams.battleId;
+        $scope.getBattle();
+    }
+
+    $scope.getBattle = function(){
+        $http.get(config.apiRoot + '/battles/' + $scope.battleId)
+            .then((response) => {
+                $scope.battle = response.data;
+                $scope.$broadcast('scroll.refreshComplete');
+            })
+    }
+
+    init();
+});
+var app = angular.module('battletime-app');
+
+app.directive('battleItem', function() {
+    return {
+      restrict: 'E',
+      scope: {
+        battle: '=input'
+      },
+      templateUrl: 'templates/battles/battle-item.dir.html'
+    };
+});
 var app = angular.module('battletime-app');
 
 app.controller('battlesCtrl', function ($scope, $ionicModal, $ionicPopover, $http, $state, $timeout, authService, config) {
@@ -506,18 +498,25 @@ app.controller('settingsCtrl', function ($scope, $ionicModal, $ionicPopover, $ht
 
 var app = angular.module('battletime-app');
 
-app.controller('signupCtrl', function($scope, authService, $state){
+app.controller('signupCtrl', function($scope, authService, $state, $ionicLoading){
 
-    $scope.first = true;
+  
     $scope.signup = {};
-    $scope.login = {};
+    $scope.login = {
+        username: authService.getLastUsedUsername()
+    };
+
+    $scope.first = !($scope.login.username);
 
     $scope.sendSignup = function(){
+        $ionicLoading.show();
         authService.Signup($scope.signup).then(
         (user) => {
+            $ionicLoading.hide();
              $state.go('app.portal');
         }, 
         (response) => {
+            $ionicLoading.hide();
             $scope.signup.errors = response.errors
         });
 
@@ -528,11 +527,14 @@ app.controller('signupCtrl', function($scope, authService, $state){
     }
 
     $scope.sendLogin = function(){
+        $ionicLoading.show();
         authService.Login($scope.login).then(
         (user) => {
+            $ionicLoading.hide();
             $state.go('app.portal');
         }, 
         (response) => {
+            $ionicLoading.hide();
             $scope.login.errors = response.errors
         });
 
