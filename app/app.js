@@ -14,3 +14,13 @@ app.run(function ($ionicPlatform) {
         }
     });
 })
+
+app.service('onError', function($ionicPopup, $ionicLoading){
+    return function(response){
+        $ionicLoading.hide();
+        var alertPopup = $ionicPopup.alert({
+            title: 'Ow noes!',
+            template: 'Something broke :('
+        });
+    }
+})

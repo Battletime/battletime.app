@@ -25,3 +25,26 @@
     background-color:#ffc900;
     color:white;
 }
+
+.card.dark{
+    background-color:#eee;
+}
+
+.card {
+    border-left:3px solid #555;
+}
+
+.card.asssertive{
+    border-left:3px solid #ef473a;
+}
+
+.item-avatar.participants img{
+    top:6px;
+}
+
+.loading{
+    background-color: #555;
+    color:white;
+    font-size:120%;
+    line-height: 36px;
+}

@@ -45,20 +45,20 @@ app.controller('portalCtrl', function ($scope, $ionicModal, $window, $ionicPopov
  
     $scope.getRandomBattle = function(){
         counter = 0;
-        $scope.randomChallanger = null;
+        $scope.callout = null;
         $scope.loading = true; 
         $scope.msgIndex = getRandomInt(0, $scope.messages.length-1);
 
           $http.post(config.apiRoot + '/battles/random/' + authService.user._id)
             .then((response) => {
-                $scope.randomChallanger = response.data;             
+                $scope.callout = response.data;             
             })
 
         timeoutId = $window.setInterval(() => {
             counter++;
             var nextIndex = getRandomInt(0, $scope.messages.length-2);
             $scope.msgIndex = nextIndex == $scope.msgIndex ? nextIndex + 1 : nextIndex;
-            if(counter > 5 && $scope.randomChallanger){               
+            if(counter > 5 && $scope.callout){               
                 window.clearTimeout(timeoutId);
                 $scope.loading = false;           
             }
@@ -69,8 +69,8 @@ app.controller('portalCtrl', function ($scope, $ionicModal, $window, $ionicPopov
     }
 
     $scope.addChallenger = function(){
-        $scope.battles.push($scope.randomChallanger);
-        $scope.randomChallanger = null;
+        $scope.battles.push($scope.callout);
+        $scope.callout = null;
     }
 
     $scope.getMyBattles = function(){

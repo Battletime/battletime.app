@@ -8,32 +8,36 @@
 
         <div class="text-center challenge">
             
-            <buttton ng-show="!randomChallanger && !loading" class="button button-raised button-assertive" ng-click="getRandomBattle()">
+            <buttton ng-show="!callout && !loading" class="button button-raised button-assertive" ng-click="getRandomBattle()">
                 Random callout
             </buttton>       
         
-            <div ng-show="loading">
-                <p class="text-primary">"{{messages[msgIndex]}}"</p>
+            <div ng-show="loading" class="loading">
+                "{{messages[msgIndex]}}"
             </div>
 
-            <div ng-show="randomChallanger && !loading">
-                <p>You <span class="text-assertive">V.S.</span> {{randomChallanger.participants[1].username}}</p>
-                <butto ng-click="addChallenger()" class="button button-calm">Let's go!</button>
+            <div ng-show="callout && !loading">
+                <h4 class="border-bottom">
+                    You <span class="text-assertive">V.S.</span> {{callout.participants[1].username}}
+                </h4>
+                <button ng-click="addChallenger()" class="button button-calm">Let's go!</button>
             </div>
 
         </div>
 
          <hr>
 
-        <div class="im-wrapper card text-center margin-top" ng-show="battles.length <= 0">
+        <div class="im-wrapper card dark text-center margin-top" ng-show="battles.length <= 0">
             <h4 class="border-bottom">
-                Ow noes!
+                First timer!
             </h4>
             <p>
-                You don't have any battles yet. You can give a callout to a random bboy or bgirl (click the button above).
+                Welcome {{auth.user.username}} to battletime. In this app you can challange other bboys or bgirls in a <callout></callout>
+                or join events and dance you're way to the top! Battling others and winning battles earns you points. 
+                You can unlock awesome achievements and become the best breaker in the world! 
             </p>
              <p>
-                You have not joined an event yet. Visit the events page via the menu (top left hamburger menu).
+                Make you're first <b>callout</b> (button above) or join you're first <b>event</b> via the events tab (hamburger menu).
             </p>
         </div>
 

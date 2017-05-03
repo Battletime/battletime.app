@@ -15,6 +15,16 @@ app.run(function ($ionicPlatform) {
     });
 })
 
+app.service('onError', function($ionicPopup, $ionicLoading){
+    return function(response){
+        $ionicLoading.hide();
+        var alertPopup = $ionicPopup.alert({
+            title: 'Ow noes!',
+            template: 'Something broke :('
+        });
+    }
+})
+
 angular.module('battletime-app')
 .service('authService', function($http, $q, config){
     
@@ -79,8 +89,8 @@ angular.module('battletime-app')
 .service('config', function($http, $q){
     
     return {
-        apiRoot: "https://battletime.herokuapp.com/api",
-        //apiRoot: "http://localhost:3000/api"
+        //apiRoot: "https://battletime.herokuapp.com/api",
+        apiRoot: "http://localhost:3000/api"
     }
 
 });
@@ -298,14 +308,11 @@ app.controller('challengeCtrl', function ($scope, $ionicModal, $ionicPopover, $h
 
 var app = angular.module('battletime-app');
 
-app.controller('battleDetailsCtrl', function ($scope,authService, $http, config, $stateParams) {
+app.controller('battleDetailsCtrl', function ($scope,authService, $http, config, $stateParams, $ionicLoading, onError) {
 
     $scope.battleId;
-    $scope.myVote = {
-
-    }
+    $scope.auth;
   
-
     function init(){
         $scope.auth = authService;
         $scope.battleId = $stateParams.battleId;
@@ -313,18 +320,40 @@ app.controller('battleDetailsCtrl', function ($scope,authService, $http, config,
     }
 
     $scope.getBattle = function(){
+        $ionicLoading.show();
         $http.get(config.apiRoot + '/battles/' + $scope.battleId)
             .then((response) => {
                 $scope.battle = response.data;
+                $ionicLoading.hide();
                 $scope.$broadcast('scroll.refreshComplete');
-            })
+            }, onError)       
     }
 
-    $scope.vote = function(){
-        debugger;
-        $scope.battle.myVote = {
-            user: $scope.selectedUser
+    $scope.canVote = function(){
+        if($scope.battle){
+            var canVote = true;
+            $scope.battle.votes.forEach((vote) => {
+                if(vote.byUserId == authService.user._id){
+                    canVote = false;
+                }
+            }); 
+            return canVote;
         }
+       
+    }
+
+    $scope.vote = function(selectedUser){
+        $ionicLoading.show();
+        var vote = {
+            byUserId: authService.user._id,
+            forUserId: selectedUser._id
+        };
+
+        $http.post(config.apiRoot + '/battles/' + $scope.battleId + '/votes', vote)
+            .then((response) => {
+                $scope.battle = response.data;
+                $ionicLoading.hide();
+            }, onError)  
     }
 
     init();
@@ -464,20 +493,20 @@ app.controller('portalCtrl', function ($scope, $ionicModal, $window, $ionicPopov
  
     $scope.getRandomBattle = function(){
         counter = 0;
-        $scope.randomChallanger = null;
+        $scope.callout = null;
         $scope.loading = true; 
         $scope.msgIndex = getRandomInt(0, $scope.messages.length-1);
 
           $http.post(config.apiRoot + '/battles/random/' + authService.user._id)
             .then((response) => {
-                $scope.randomChallanger = response.data;             
+                $scope.callout = response.data;             
             })
 
         timeoutId = $window.setInterval(() => {
             counter++;
             var nextIndex = getRandomInt(0, $scope.messages.length-2);
             $scope.msgIndex = nextIndex == $scope.msgIndex ? nextIndex + 1 : nextIndex;
-            if(counter > 5 && $scope.randomChallanger){               
+            if(counter > 5 && $scope.callout){               
                 window.clearTimeout(timeoutId);
                 $scope.loading = false;           
             }
@@ -488,8 +517,8 @@ app.controller('portalCtrl', function ($scope, $ionicModal, $window, $ionicPopov
     }
 
     $scope.addChallenger = function(){
-        $scope.battles.push($scope.randomChallanger);
-        $scope.randomChallanger = null;
+        $scope.battles.push($scope.callout);
+        $scope.callout = null;
     }
 
     $scope.getMyBattles = function(){
