@@ -9,39 +9,57 @@
         <div class="text-center challenge">
             
             <buttton ng-show="!randomChallanger && !loading" class="button button-raised button-assertive" ng-click="getRandomBattle()">
-                Random challanger
+                Random callout
             </buttton>       
         
             <div ng-show="loading">
-                <p class="text-primary">{{messages[msgIndex]}}</p>
+                <p class="text-primary">"{{messages[msgIndex]}}"</p>
             </div>
 
             <div ng-show="randomChallanger && !loading">
                 <p>You <span class="text-assertive">V.S.</span> {{randomChallanger.participants[1].username}}</p>
-                <butto ng-click="addChallenger()" class="button button button-small button-calm">Let's go!</button>
+                <butto ng-click="addChallenger()" class="button button-calm">Let's go!</button>
             </div>
 
         </div>
 
          <hr>
 
+        <div class="im-wrapper card text-center margin-top" ng-show="battles.length <= 0">
+            <h4 class="border-bottom">
+                Ow noes!
+            </h4>
+            <p>
+                You don't have any battles yet. You can give a callout to a random bboy or bgirl (click the button above).
+            </p>
+             <p>
+                You have not joined an event yet. Visit the events page via the menu (top left hamburger menu).
+            </p>
+        </div>
+
+         <hr>
+         
+
         <div class="im-wrapper">
 
-            <div ng-show="(battles | filter:{ status: { id: 1 } }).length != 0">
-                <h4 class="border-bottom">
-                    <i class="icon ion-android-color-palette"></i>      
-                    In progress
-                </h4>
+            <h4 class="border-bottom">
+                <i class="icon ion-android-color-palette"></i>      
+                Battles in progress
+            </h4>
 
-                <div class="list" ng-show="battles">
-                    <battle-item ng-repeat="battle in battles | filter:{ status: { id: 1 } }" input="battle">
-                    </battle-item>
-                </div>
+            <div ng-show="(battles | filter:{ status: { id: 1 } }).length == 0">
+                <p class="text-calm">No active battles</p>
             </div>
+            
+            <div class="list" ng-show="battles">
+                <battle-item ng-repeat="battle in battles | filter:{ status: { id: 1 } }" input="battle">
+                </battle-item>
+            </div>
+    
                 
             <h4 class="border-bottom">
                 <i class="icon ion-clock"></i>      
-                Up and coming
+                Battles up and coming
             </h4>
 
             <div ng-show="(battles | filter:{ status: { id: 0 } }).length == 0">

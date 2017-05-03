@@ -17,7 +17,9 @@
     width:100%;
 }
 
-
+.list.bordered .item{
+    border-top:1px solid #ddd;
+}
 
 .bar-bashj{
     background-color:#ffc900;

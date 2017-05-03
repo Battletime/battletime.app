@@ -6,20 +6,81 @@
 
         <ion-refresher pulling-text="Pull to refresh" on-refresh="getBattle()"></ion-refresher>
 
-        <div ng-show="battle">
+        <div ng-show="battle" >
 
-             <a class="item item-avatar my-battles">
-                <img src="img/material1.jpg">
+            <div class="list card bordered">
 
-                <span ng-repeat="user in battle.participants track by $index">
-                    {{user._id == auth.user._id ? 'You' : user.username }}
-                    <span class="text-assertive" ng-show="$index < battle.participants.length -1">V.S.</span>
-                </span>
-                
-                <p>
-                    {{battle.event.name ? battle.event.name : 'Free battle'}}
-                </p>
-            </a>
+                <div class="item item-icon-left">
+                    <i class="icon ion-ios-clock"></i>
+                    <span ng-show="battle.startedOn">{{battle.startedOn | date : 'medium' }}</span>
+                    <span ng-show="!battle.startedOn">Not yet started </span>
+                </div>
+
+                <div class="item item-icon-left">
+                    <i class="icon ion-trophy"></i>
+                    <span>{{battle.winner ? battle.winner : 'No winner' }}</span>
+                </div>
+    
+                <div href="#" class="item item-icon-left">
+                    <i class="icon ion-flag"></i>
+                    <span>{{battle.event ? battle.event : 'Callout' }}</span>
+                </div>
+            </div>
+
+            <div class="list card bordered">
+
+                <div class="item item-icon-left">
+                    <i class="icon ion-compose"></i>
+                    <h2>Vote</h2>
+                    <p>Who do you think won the battle?</p>
+                </div>
+
+                <div class="item item-body">
+                    <span ng-show="battle.stoppedOn || battle.event">Voting is closed</span>
+
+                    <div ng-show="!battle.event && !battle.stoppedOn && battle.startedOn">
+                        <div ng-show="!battle.myVote">
+                            <label class="item-input item-select" >
+                                <div class="input-label">
+                                Participants
+                                </div>
+                                <select ng-model="selectedIndex">
+                                    <option value="{{$index}}" ng-repeat="user in battle.participants track by $index">
+                                        {{user.username}}
+                                    </option>
+                                </select>
+                            </label>
+
+                            <button class="button button-block button-assertive" ng-click="vote($index)">Vote</button>
+                        </div>
+                        <div ng-show="selectedIndex">
+                            <p>You voted for {{battle.participants[selectedIndex].username}}</p>
+                        </div>
+                    </div>
+
+                    <span ng-show="!battle.startedOn && !battle.event">
+                        Voting has not started yet
+                    </span>
+
+                </div>
+            </div>
+
+            <div class="list card bordered">
+
+                <div class="item item-icon-left">
+                    <i class="icon ion-person"></i>
+                    <h2>Participants</h2>
+                    <p>These brave dances gave it all</p>
+                </div>
+   
+                <div class="item item-avatar my-battles" ng-repeat="user in battle.participants">
+                    <img src="img/material1.jpg">
+
+                    <span >
+                        {{user.username }}
+                    </span>
+                </div>
+            </div>
         </div>
             
 

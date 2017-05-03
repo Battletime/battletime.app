@@ -2,7 +2,6 @@ var app = angular.module('battletime-app');
 
 app.controller('battlesCtrl', function ($scope, $ionicModal, $ionicPopover, $http, $state, $timeout, authService, config) {
 
-
     $scope.battles;
 
     function init(){

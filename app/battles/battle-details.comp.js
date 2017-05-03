@@ -1,10 +1,15 @@
 var app = angular.module('battletime-app');
 
-app.controller('battleDetailsCtrl', function ($scope, $http, config, $stateParams) {
+app.controller('battleDetailsCtrl', function ($scope,authService, $http, config, $stateParams) {
 
     $scope.battleId;
+    $scope.myVote = {
+
+    }
+  
 
     function init(){
+        $scope.auth = authService;
         $scope.battleId = $stateParams.battleId;
         $scope.getBattle();
     }
@@ -15,6 +20,13 @@ app.controller('battleDetailsCtrl', function ($scope, $http, config, $stateParam
                 $scope.battle = response.data;
                 $scope.$broadcast('scroll.refreshComplete');
             })
+    }
+
+    $scope.vote = function(){
+        debugger;
+        $scope.battle.myVote = {
+            user: $scope.selectedUser
+        }
     }
 
     init();
