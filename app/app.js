@@ -17,7 +17,11 @@ app.run(function ($ionicPlatform) {
 
 app.filter('image', function(config){
     return function(input){
-        return config.serverRoot + input;
+        if(input.indexOf("imgur") == -1)
+            return config.serverRoot + input;
+        else{
+            return input;
+        }
     }
 });
 

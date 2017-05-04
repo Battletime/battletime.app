@@ -17,7 +17,11 @@ app.run(function ($ionicPlatform) {
 
 app.filter('image', function(config){
     return function(input){
-        return config.serverRoot + input;
+        if(input.indexOf("imgur") == -1)
+            return config.serverRoot + input;
+        else{
+            return input;
+        }
     }
 });
 
@@ -100,8 +104,8 @@ angular.module('battletime-app')
 angular.module('battletime-app')
 .service('config', function($http, $q){
     
-    var serverRoot = "https://battletime.herokuapp.com";
-    //var serverRoot = "http://localhost:3000";
+    //var serverRoot = "https://battletime.herokuapp.com";
+    var serverRoot = "http://localhost:3000";
 
     return {
         serverRoot: serverRoot,
@@ -568,17 +572,17 @@ app.controller('settingsCtrl', function ($scope,$state, $http, authService, $ion
         $state.go('login');
     }
 
-    // $scope.test = function(){
-    //        $ionicLoading.show();
-    //         var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
-    //         $http.post(url, { baseString: document.getElementById('temp').value })
-    //             .then((response) => {
-    //                 authService.updateUser(response.data);
-    //                 authService.user.imageUri += ('?decache=' + Math.random());
-    //                 $ionicLoading.hide();
+    $scope.test = function(){
+           $ionicLoading.show();
+            var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
+            $http.post(url, { baseString: document.getElementById('temp').value })
+                .then((response) => {
+                    authService.updateUser(response.data);
+                    authService.user.imageUri += ('?decache=' + Math.random());
+                    $ionicLoading.hide();
                     
-    //             }, onError);          
-    // }
+                }, onError);          
+    }
 
     $scope.editPicture = function(){
 

@@ -13,17 +13,17 @@ app.controller('settingsCtrl', function ($scope,$state, $http, authService, $ion
         $state.go('login');
     }
 
-    // $scope.test = function(){
-    //        $ionicLoading.show();
-    //         var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
-    //         $http.post(url, { baseString: document.getElementById('temp').value })
-    //             .then((response) => {
-    //                 authService.updateUser(response.data);
-    //                 authService.user.imageUri += ('?decache=' + Math.random());
-    //                 $ionicLoading.hide();
+    $scope.test = function(){
+           $ionicLoading.show();
+            var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
+            $http.post(url, { baseString: document.getElementById('temp').value })
+                .then((response) => {
+                    authService.updateUser(response.data);
+                    authService.user.imageUri += ('?decache=' + Math.random());
+                    $ionicLoading.hide();
                     
-    //             }, onError);          
-    // }
+                }, onError);          
+    }
 
     $scope.editPicture = function(){
 

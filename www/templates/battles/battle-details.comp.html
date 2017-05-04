@@ -69,8 +69,7 @@
                 </div>
    
                 <div class="item item-avatar participants" ng-repeat="user in battle.participants">
-                    <img src="img/material1.jpg">
-
+                    <img ng-src="{{user.imageUri | image}}" >
                     <span >
                         {{user.username }} <b> {{user._id == battle.winner._id ? '- Winner' : ''}} </b>
                     </span>

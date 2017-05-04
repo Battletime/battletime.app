@@ -56,7 +56,7 @@
     position: relative;
     margin:12px;
     left:50%;
-    margin-left:-50px;
+    margin-left:-100px;
 }
 
 .profile-name{
@@ -72,7 +72,7 @@
 }
 
 .profile i{
-   font-size:200%;
+   font-size:300%;
    padding:3px;
    position: absolute;
    color:white;
