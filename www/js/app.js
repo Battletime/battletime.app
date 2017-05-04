@@ -416,6 +416,57 @@ app.controller('battlesCtrl', function ($scope, $ionicModal, $ionicPopover, $htt
 
 var app = angular.module('battletime-app');
 
+app.controller('eventConfirmCtrl', function ($scope, $stateParams, $ionicModal, $ionicPopover, $state, $timeout, authService, $http, config) {
+
+    $scope.eventId;
+
+    function init(){
+        $scope.eventId = $stateParams.eventId
+    }
+
+    init();
+
+
+});
+var app = angular.module('battletime-app');
+
+app.controller('eventsCtrl', function ($scope, $ionicModal, $cordovaBarcodeScanner, $state, $timeout, authService, $http, config) {
+
+    $scope.auth;
+    $scope.events = [];
+
+    function init(){
+        $scope.auth = authService;
+        if($scope.auth.user){
+            $scope.getMyEvents();
+        }
+    }
+
+    $scope.getMyEvents = function(){
+        $http.get(config.apiRoot + '/users/' + authService.user._id + '/events')
+            .then( (response) => {
+                $scope.events = response.data;
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+    }
+
+    $scope.scanEventCode = function(){
+        $cordovaBarcodeScanner.scan().then(function(result) {
+            var eventSecret = result.text;
+            $http.post(config.apiRoot + '/events/secret/' + eventSecret, { userId: authService.user._id})
+                .success(function(event){
+                    $state.go('event-confirm', {eventId: event._id });
+                });
+        });
+    }
+
+    init();
+
+});
+   
+
+var app = angular.module('battletime-app');
+
 app.controller('portalCtrl', function ($scope, $ionicModal, $window, $ionicPopover, $http, $state, $timeout, authService, config) {
 
     $scope.messages = [
@@ -508,57 +559,6 @@ app.controller('portalCtrl', function ($scope, $ionicModal, $window, $ionicPopov
 
 var app = angular.module('battletime-app');
 
-app.controller('eventConfirmCtrl', function ($scope, $stateParams, $ionicModal, $ionicPopover, $state, $timeout, authService, $http, config) {
-
-    $scope.eventId;
-
-    function init(){
-        $scope.eventId = $stateParams.eventId
-    }
-
-    init();
-
-
-});
-var app = angular.module('battletime-app');
-
-app.controller('eventsCtrl', function ($scope, $ionicModal, $cordovaBarcodeScanner, $state, $timeout, authService, $http, config) {
-
-    $scope.auth;
-    $scope.events = [];
-
-    function init(){
-        $scope.auth = authService;
-        if($scope.auth.user){
-            $scope.getMyEvents();
-        }
-    }
-
-    $scope.getMyEvents = function(){
-        $http.get(config.apiRoot + '/users/' + authService.user._id + '/events')
-            .then( (response) => {
-                $scope.events = response.data;
-                $scope.$broadcast('scroll.refreshComplete');
-            });
-    }
-
-    $scope.scanEventCode = function(){
-        $cordovaBarcodeScanner.scan().then(function(result) {
-            var eventSecret = result.text;
-            $http.post(config.apiRoot + '/events/secret/' + eventSecret, { userId: authService.user._id})
-                .success(function(event){
-                    $state.go('event-confirm', {eventId: event._id });
-                });
-        });
-    }
-
-    init();
-
-});
-   
-
-var app = angular.module('battletime-app');
-
 app.controller('settingsCtrl', function ($scope,$state, $http, authService, $ionicLoading, $cordovaCamera, config, onError) {
 
 
@@ -572,17 +572,17 @@ app.controller('settingsCtrl', function ($scope,$state, $http, authService, $ion
         $state.go('login');
     }
 
-    $scope.test = function(){
-           $ionicLoading.show();
-            var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
-            $http.post(url, { baseString: document.getElementById('temp').value })
-                .then((response) => {
-                    authService.updateUser(response.data);
-                    authService.user.imageUri += ('?decache=' + Math.random());
-                    $ionicLoading.hide();
+    // $scope.test = function(){
+    //        $ionicLoading.show();
+    //         var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
+    //         $http.post(url, { baseString: document.getElementById('temp').value })
+    //             .then((response) => {
+    //                 authService.updateUser(response.data);
+    //                 authService.user.imageUri += ('?decache=' + Math.random());
+    //                 $ionicLoading.hide();
                     
-                }, onError);          
-    }
+    //             }, onError);          
+    // }
 
     $scope.editPicture = function(){
 
