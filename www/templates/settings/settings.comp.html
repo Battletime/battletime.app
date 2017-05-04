@@ -1,8 +1,17 @@
 <ion-view view-title="Battletime">
     <ion-content>
         <div class="bar bar-subheader bar-stable static text-center">
-            <strong class="title">Settings</strong>
+            <strong class="title">Profile</strong>
         </div>
+
+        <div class="profile" ng-click="editPicture()">
+            <i class="icon ion-camera"></i>
+            <img ng-src="{{auth.user.imageUri | image}}" >
+        </div>
+
+        <h4 class="border-bottom profile-name">
+            {{auth.user.username}}
+        </h4>
 
         <div class="text-center">
             <button class="button button-assertive" ng-click="logout()">Logout</button>

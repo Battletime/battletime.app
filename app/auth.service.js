@@ -16,6 +16,10 @@ angular.module('battletime-app')
         return localStorage.getItem("lastUsername");
     }
 
+    self.updateUser = function(user){
+        saveUser(user);
+    }
+
     self.Login = function(login){
         var deferred = $q.defer();
 

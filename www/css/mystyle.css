@@ -48,3 +48,34 @@
     font-size:120%;
     line-height: 36px;
 }
+
+.profile{
+    text-align:center;
+    width:200px;
+    display: inline-block;
+    position: relative;
+    margin:12px;
+    left:50%;
+    margin-left:-50px;
+}
+
+.profile-name{
+    font-size: 200%;
+    color:#555;
+    margin-top:7px;
+    text-align: center;
+    
+}
+
+.profile img{
+    width:100%;
+}
+
+.profile i{
+   font-size:200%;
+   padding:3px;
+   position: absolute;
+   color:white;
+   bottom:0px;
+   right:0px;
+}

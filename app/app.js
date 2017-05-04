@@ -15,6 +15,12 @@ app.run(function ($ionicPlatform) {
     });
 })
 
+app.filter('image', function(config){
+    return function(input){
+        return config.serverRoot + input;
+    }
+});
+
 app.service('onError', function($ionicPopup, $ionicLoading){
     return function(response){
         $ionicLoading.hide();
@@ -24,3 +30,5 @@ app.service('onError', function($ionicPopup, $ionicLoading){
         });
     }
 })
+
+

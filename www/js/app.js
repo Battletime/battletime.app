@@ -15,6 +15,12 @@ app.run(function ($ionicPlatform) {
     });
 })
 
+app.filter('image', function(config){
+    return function(input){
+        return config.serverRoot + input;
+    }
+});
+
 app.service('onError', function($ionicPopup, $ionicLoading){
     return function(response){
         $ionicLoading.hide();
@@ -24,6 +30,8 @@ app.service('onError', function($ionicPopup, $ionicLoading){
         });
     }
 })
+
+
 
 angular.module('battletime-app')
 .service('authService', function($http, $q, config){
@@ -41,6 +49,10 @@ angular.module('battletime-app')
 
     self.getLastUsedUsername = function(){
         return localStorage.getItem("lastUsername");
+    }
+
+    self.updateUser = function(user){
+        saveUser(user);
     }
 
     self.Login = function(login){
@@ -88,9 +100,12 @@ angular.module('battletime-app')
 angular.module('battletime-app')
 .service('config', function($http, $q){
     
+    var serverRoot = "https://battletime.herokuapp.com";
+    //var serverRoot = "http://localhost:3000";
+
     return {
-        //apiRoot: "https://battletime.herokuapp.com/api",
-        apiRoot: "http://localhost:3000/api"
+        serverRoot: serverRoot,
+        apiRoot: serverRoot + "/api"
     }
 
 });
@@ -540,12 +555,12 @@ app.controller('portalCtrl', function ($scope, $ionicModal, $window, $ionicPopov
 
 var app = angular.module('battletime-app');
 
-app.controller('settingsCtrl', function ($scope, $ionicModal, $ionicPopover, $http, $state, $timeout, authService, config) {
+app.controller('settingsCtrl', function ($scope,$state, $http, authService, $ionicLoading, $cordovaCamera, config, onError) {
 
 
 
     function init(){
-
+        $scope.auth = authService;
     }
 
     $scope.logout = function(){
@@ -553,10 +568,53 @@ app.controller('settingsCtrl', function ($scope, $ionicModal, $ionicPopover, $ht
         $state.go('login');
     }
 
+    // $scope.test = function(){
+    //        $ionicLoading.show();
+    //         var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
+    //         $http.post(url, { baseString: document.getElementById('temp').value })
+    //             .then((response) => {
+    //                 authService.updateUser(response.data);
+    //                 authService.user.imageUri += ('?decache=' + Math.random());
+    //                 $ionicLoading.hide();
+                    
+    //             }, onError);          
+    // }
+
+    $scope.editPicture = function(){
+
+        var options = {
+            quality: 50,
+            destinationType: Camera.DestinationType.DATA_URL,
+            sourceType: Camera.PictureSourceType.CAMERA,
+            allowEdit: true,
+            encodingType: Camera.EncodingType.JPEG,
+            targetWidth: 400,
+            targetHeight: 400,
+            popoverOptions: CameraPopoverOptions,
+            saveToPhotoAlbum: false,
+            correctOrientation:true
+        };
+
+        $cordovaCamera.getPicture(options)
+            .then(function(imageData) {
+                $ionicLoading.show();
+                var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
+                $http.post(url, { baseString: imageData})
+                    .then((response) => {
+                         authService.updateUser(response.data);
+                         authService.user.imageUri += ('?decache=' + Math.random());
+                         $ionicLoading.hide();
+                    }, onError);          
+            }, onError);
+    }
+
+
     init();
 
 });
    
+
+  
 
 var app = angular.module('battletime-app');
 
