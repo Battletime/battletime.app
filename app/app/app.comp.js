@@ -1,8 +1,10 @@
 var app = angular.module('battletime-app');
 
-app.controller('appCtrl', function ($scope, $ionicModal, $ionicPopover, $timeout) {
+app.controller('appCtrl', function ($scope, $ionicModal, authServicce, $ionicPopover, $timeout) {
     // Form data for the login modal
     $scope.loginData = {};
+
+    $scope.auth = authService;
 
     var navIcons = document.getElementsByClassName('ion-navicon');
     for (var i = 0; i < navIcons.length; i++) {

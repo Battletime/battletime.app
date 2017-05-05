@@ -25,3 +25,12 @@
     background-color:#ffc900;
     color:white;
 }
+
+.bar.expanded{
+    height:200px;
+}
+
+.flex{
+    display: flex;
+    justify-content: space-around;
+}

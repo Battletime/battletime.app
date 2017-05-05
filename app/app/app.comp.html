@@ -17,9 +17,9 @@
     </ion-side-menu-content>
     <ion-side-menu side="left">
         <ion-header-bar class="expanded">
-            <img src="img/bashj_logo.jpg" class="avatar motion spin fade">
+            <img ng-src="{{auth.user.imageUri | image}}" class="avatar motion spin fade">
             <div class="menu-bottom">
-                Battletime
+                {{auth.user.username}}
             </div>
         </ion-header-bar>
         <ion-content class="stable-bg has-expanded-header">
