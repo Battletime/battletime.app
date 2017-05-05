@@ -1,9 +1,12 @@
 angular.module('battletime-app')
 .service('config', function($http, $q){
     
+    var serverRoot = "https://battletime.herokuapp.com";
+    //var serverRoot = "http://localhost:3000";
+
     return {
-        apiRoot: "https://battletime.herokuapp.com/api",
-        //apiRoot: "http://localhost:3000/api"
+        serverRoot: serverRoot,
+        apiRoot: serverRoot + "/api"
     }
 
 });

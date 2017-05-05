@@ -1,83 +1,53 @@
 <ion-view view-title="Battletime">
     <ion-content>
-        <div class="bar bar-subheader expanded bar-stable static text-center">
-            <div class="flex">
-                <div>
-                    
-                </div>
+        <div class="bar bar-subheader expanded bar-portal bar-stable static text-center">
+            <div class="profile-pic" ng-click="editPicture()">
+                <i class="icon ion-camera"></i>
+                <img ng-src="{{auth.user.imageUri | image}}" >
             </div>
-
-
-
         </div>
 
-        <ion-refresher pulling-text="Pull to refresh" on-refresh="getMyBattles()"></ion-refresher>
-
-        <div class="text-center challenge">
-            
-            <buttton ng-show="!randomChallanger && !loading" class="button button-raised button-assertive" ng-click="getRandomBattle()">
-                Random callout
-            </buttton>       
-        
-            <div ng-show="loading">
-                <p class="text-primary">"{{messages[msgIndex]}}"</p>
-            </div>
-
-            <div ng-show="randomChallanger && !loading">
-                <p>You <span class="text-assertive">V.S.</span> {{randomChallanger.participants[1].username}}</p>
-                <butto ng-click="addChallenger()" class="button button-calm">Let's go!</button>
-            </div>
-
-        </div>
-
-         <hr>
-
-        <div class="im-wrapper card text-center margin-top" ng-show="battles.length <= 0">
-            <h4 class="border-bottom">
-                Ow noes!
+        <div class="im-wrapper text-center">
+            <h4 class="border-bottom" >
+                Welcome {{auth.user.username}}
             </h4>
+
             <p>
-                You don't have any battles yet. You can give a callout to a random bboy or bgirl (click the button above).
+                Thank you {{auth.user.username}} for singing in! 
+                We will now be able te generate battles with you're profile.
+                Every <b>battle</b> will be presented on the big screen using you're username and <b>profile</b> picture.
+                You can change you're profile picture by clicking <the></the> button above.
             </p>
-             <p>
-                You have not joined an event yet. Visit the events page via the menu (top left hamburger menu).
+
+            <h4 class="border-bottom" >
+                Battles
+            </h4>
+
+            <p>
+                Every battle you participate in, is viewable via the 
+                <b>battles</b> page (see hamburger menu on the top left).
+                These battles will be assigned to you via events. 
             </p>
+
+            <button class="button button-block button-assertive" ui-sref="app.battles">
+                Go to battles page!
+            </button>
+
+            <h4 class="border-bottom" >
+                Events
+            </h4>
+
+            <p>
+                Now that you have a battletime profile, you can join events. 
+                After every bboy or bgirl is subscribed to the event, the event can start! 
+                You can join an event by scanning the <b>event QR code</b> via the <b>SCAN QR CODE</b> button below.
+            </p>
+
+            <button class="button button-block button-assertive" ng-click="scanEventCode()">
+                SCAN SQ CODE
+            </button>
         </div>
-
-         <hr>
-         
-
-        <div class="im-wrapper">
-
-            <h4 class="border-bottom">
-                <i class="icon ion-android-color-palette"></i>      
-                Battles in progress
-            </h4>
-
-            <div ng-show="(battles | filter:{ status: { id: 1 } }).length == 0">
-                <p class="text-calm">No active battles</p>
-            </div>
-            
-            <div class="list" ng-show="battles">
-                <battle-item ng-repeat="battle in battles | filter:{ status: { id: 1 } }" input="battle">
-                </battle-item>
-            </div>
-    
-                
-            <h4 class="border-bottom">
-                <i class="icon ion-clock"></i>      
-                Battles up and coming
-            </h4>
-
-            <div ng-show="(battles | filter:{ status: { id: 0 } }).length == 0">
-                <p class="text-calm">No up and comming battles</p>
-            </div>
-
-            <div class="list" ng-show="battles">
-                  <battle-item ng-repeat="battle in battles | filter:{ status: { id: 0 } }" input="battle">
-                </battle-item>
-            </div>
-
+     
     </ion-content>
 </ion-view>
 

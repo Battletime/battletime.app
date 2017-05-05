@@ -27,7 +27,43 @@
 }
 
 .bar.expanded{
-    height:200px;
+    height:150px;
+}
+
+.bar-portal{
+    margin-bottom:30px;
+}
+
+.bar-signup{
+    margin-bottom:10px;
+    display: block;
+}
+
+.bar-portal .profile-pic{
+    position: relative;
+    width: 150px;
+    top: 20px;
+    left: 50%;
+    margin-left: -75px;
+}
+
+.profile-pic{
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+}
+
+.profile-pic img{
+    border:3px solid white;
+    width:100%;
+    display: block;
+}
+
+.profile-pic i{
+    position: absolute;
+    right:6px; bottom:6px;
+    color:white;
+    font-size:120%;
+    padding:2px 5px;
+    border: 1px solid white;
 }
 
 .flex{

@@ -8,17 +8,20 @@
 
         <div class="im-wrapper">
 
-            <div ng-show="(battles | filter:{ status: { id: 1 } }).length != 0">
                 <h4 class="border-bottom">
                     <i class="icon ion-android-color-palette"></i>      
                     In progress
                 </h4>
 
-                <div class="list" ng-show="battles">
+                <div ng-show="(battles | filter:{ status: { id: 1 } }).length == 0">
+                    <p class="text-calm">No battles in progress</p>
+                </div>
+
+                <div class="list" ng-show="battles" ng-show="(battles | filter:{ status: { id: 1 } }).length != 0">
                     <battle-item ng-repeat="battle in battles | filter:{ status: { id: 1 } }" input="battle">
                     </battle-item>
                 </div>
-            </div>
+
                 
             <h4 class="border-bottom">
                 <i class="icon ion-clock"></i>      
@@ -41,7 +44,7 @@
             </h4>
 
             <div ng-show="(battles | filter:{ status: { id: 2 } }).length == 0">
-                <p class="text-calm">No up and comming battles</p>
+                <p class="text-calm">No previous battles</p>
             </div>
 
             <div class="list" ng-show="battles">

@@ -1,6 +1,6 @@
 var app = angular.module('battletime-app');
 
-app.controller('appCtrl', function ($scope, $ionicModal, authServicce, $ionicPopover, $timeout) {
+app.controller('appCtrl', function ($scope, $ionicModal, authService, $ionicPopover, $timeout) {
     // Form data for the login modal
     $scope.loginData = {};
 

@@ -14,3 +14,25 @@ app.run(function ($ionicPlatform) {
         }
     });
 })
+
+app.filter('image', function(config){
+    return function(input){
+        if(input && input.indexOf("imgur") == -1)
+            return config.serverRoot + input;
+        else{
+            return input;
+        }
+    }
+});
+
+app.service('onError', function($ionicPopup, $ionicLoading){
+    return function(response){
+        $ionicLoading.hide();
+        var alertPopup = $ionicPopup.alert({
+            title: 'Ow noes!',
+            template: 'Something broke :('
+        });
+    }
+})
+
+

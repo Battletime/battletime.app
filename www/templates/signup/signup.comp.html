@@ -1,79 +1,92 @@
+
 <ion-view view-title="Battletime">
     <ion-content>
-        <div ng-show="first">
-            <div class="bar bar-subheader bar-dark static text-center">
-                <strong class="title">Signup</strong>
-            </div>
-            <div class="im-wrapper text-center">
-                <strong>Create a battletime account</strong>
-            </div>
-            <form ng-submit="sendSignup()">
-                <div class="list text-center">
+        <ion-nav-bar class="bar-bashj bar-signup">
+            <strong class="title">Battletime</strong>    
+        </ion-nav-bar>
+        <div class="im-wrapper text-center">
+            <h4>Welcome</h4>
 
-                    <ul>
-                        <li class="text-assertive text-center" ng-repeat="error in signup.errors">{{error}}</li>
-                    </ul>
-                    
-                    <label class="item item-input item-floating-label">
-                        <span class="input-label">Username</span>
-                        <input type="text" ng-model="signup.username" placeholder="Username" required>
-                    </label>
-                    <label class="item item-input item-floating-label">
-                        <span class="input-label">Password</span>
-                        <input type="password" ng-model="signup.password" placeholder="Password" required>
-                    </label>
-                    <label class="item item-input item-floating-label">
-                        <span class="input-label">Repeat password</span>
-                        <input type="password" ng-model="signup.repeat" placeholder="Password repeat" required>
-                    </label>
-                    <button class="button button-block button-assertive-900 ink" data-ink-color="#9DEAFF" data-ink-opacity="1">
-                        Submit
+            <p>
+                Thank you for downloading the battletime app.
+                With this app you can view all the battles you participate in at this event.
+                To get started, you have to create an battletime account first.
+                Use you're bboy or bgirl name as username!
+            </p>
+
+            <p>Dancing in a duo? Please create one account and use both names as username. (Eric & Peter)</p>
+
+            <div ng-show="first">
+                
+                <form ng-submit="sendSignup()" class="well">
+                    <div class="list text-center">
+
+                        <ul>
+                            <li class="text-assertive text-center" ng-repeat="error in signup.errors">{{error}}</li>
+                        </ul>
+                        
+                        <label class="item item-input item-floating-label">
+                            <span class="input-label">Username</span>
+                            <input type="text" ng-model="signup.username" placeholder="Username" required>
+                        </label>
+                        <label class="item item-input item-floating-label">
+                            <span class="input-label">Email</span>
+                            <input type="email" ng-model="signup.email" placeholder="Email" required>
+                        </label>
+                        <label class="item item-input item-floating-label">
+                            <span class="input-label">Password</span>
+                            <input type="password" ng-model="signup.password" placeholder="Password" required>
+                        </label>
+                        <label class="item item-input item-floating-label">
+                            <span class="input-label">Repeat password</span>
+                            <input type="password" ng-model="signup.repeat" placeholder="Password repeat" required>
+                        </label>
+                        <button ng-disabled="!signup.username || !signup.email || !signup.password || !signup.repeat" 
+                            class="button button-block button-assertive-900 ink" 
+                            data-ink-color="#9DEAFF" data-ink-opacity="1">
+                            Create account
+                        </button>
+                
+                    </div>
+                </form>
+                <div class="im-wrapper text-center">
+                    <strong>Already have an account?</strong><br>
+                    <button class="button button-clear button-small button-calm" ng-click="first = false">
+                        Login with excisting account
                     </button>
-            
                 </div>
-            </form>
-            <div class="im-wrapper text-center">
-                <strong>Already have an accounnt?</strong></br>
-                <button class="button button-clear button-small button-calm" ng-click="first = false">
-                    Login with excisting account
-                </button>
+            </div>
+            <div ng-show="!first">
+                <strong>Login with a battletime account</strong>     
+                <form ng-submit="sendLogin()">
+                    <div class="list text-center">
+
+                        <ul>
+                            <li class="text-assertive text-center" ng-repeat="error in login.errors">{{error}}</li>
+                        </ul>
+                        
+                        <label class="item item-input item-floating-label">
+                            <span class="input-label">Email</span>
+                            <input type="email" ng-model="login.email" placeholder="email" required>
+                        </label>
+                        <label class="item item-input item-floating-label">
+                            <span class="input-label">Password</span>
+                            <input type="password" ng-model="login.password" placeholder="Password" required>
+                        </label>
+                        <button ng-disabled="!login.email || !login.password" 
+                            class="button button-block button-assertive-900 ink" data-ink-color="#9DEAFF" data-ink-opacity="1">
+                            Login 
+                        </button>
+                
+                    </div>
+                </form>
+                <div class="im-wrapper text-center">
+                    <strong>Don't have an account yet?</strong><br>
+                    <button class="button button-clear button-small button-calm" ng-click="first = true">
+                        Create a new account
+                    </button>
+                </div>
             </div>
         </div>
-        <div ng-show="!first">
-            <div class="bar bar-subheader bar-dark static text-center">
-                <strong class="title">Login</strong>
-            </div>
-            <div class="im-wrapper text-center">
-                <strong>Login with a battletime account</strong>
-            </div>
-            <form ng-submit="sendLogin()">
-                <div class="list text-center">
-
-                    <ul>
-                        <li class="text-assertive text-center" ng-repeat="error in login.errors">{{error}}</li>
-                    </ul>
-                    
-                    <label class="item item-input item-floating-label">
-                        <span class="input-label">Username</span>
-                        <input type="text" ng-model="login.username" placeholder="Username" required>
-                    </label>
-                    <label class="item item-input item-floating-label">
-                        <span class="input-label">Password</span>
-                        <input type="password" ng-model="login.password" placeholder="Password" required>
-                    </label>
-                    <button class="button button-block button-assertive-900 ink" data-ink-color="#9DEAFF" data-ink-opacity="1">
-                        Submit
-                    </button>
-            
-                </div>
-            </form>
-            <div class="im-wrapper text-center">
-                <strong>Don't have an account yet?</strong></br>
-                <button class="button button-clear button-small button-calm" ng-click="first = true">
-                    Signup for a new account
-                </button>
-            </div>
-        </div>
-       
     </ion-content>
 </ion-view>

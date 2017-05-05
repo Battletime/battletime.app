@@ -15,6 +15,28 @@ app.run(function ($ionicPlatform) {
     });
 })
 
+app.filter('image', function(config){
+    return function(input){
+        if(input && input.indexOf("imgur") == -1)
+            return config.serverRoot + input;
+        else{
+            return input;
+        }
+    }
+});
+
+app.service('onError', function($ionicPopup, $ionicLoading){
+    return function(response){
+        $ionicLoading.hide();
+        var alertPopup = $ionicPopup.alert({
+            title: 'Ow noes!',
+            template: 'Something broke :('
+        });
+    }
+})
+
+
+
 angular.module('battletime-app')
 .service('authService', function($http, $q, config){
     
@@ -31,6 +53,10 @@ angular.module('battletime-app')
 
     self.getLastUsedUsername = function(){
         return localStorage.getItem("lastUsername");
+    }
+
+    self.updateUser = function(user){
+        saveUser(user);
     }
 
     self.Login = function(login){
@@ -78,9 +104,12 @@ angular.module('battletime-app')
 angular.module('battletime-app')
 .service('config', function($http, $q){
     
+    var serverRoot = "https://battletime.herokuapp.com";
+    //var serverRoot = "http://localhost:3000";
+
     return {
-        apiRoot: "https://battletime.herokuapp.com/api",
-        //apiRoot: "http://localhost:3000/api"
+        serverRoot: serverRoot,
+        apiRoot: serverRoot + "/api"
     }
 
 });
@@ -210,7 +239,7 @@ $stateProvider
 
 var app = angular.module('battletime-app');
 
-app.controller('appCtrl', function ($scope, $ionicModal, authServicce, $ionicPopover, $timeout) {
+app.controller('appCtrl', function ($scope, $ionicModal, authService, $ionicPopover, $timeout) {
     // Form data for the login modal
     $scope.loginData = {};
 
@@ -300,14 +329,11 @@ app.controller('challengeCtrl', function ($scope, $ionicModal, $ionicPopover, $h
 
 var app = angular.module('battletime-app');
 
-app.controller('battleDetailsCtrl', function ($scope,authService, $http, config, $stateParams) {
+app.controller('battleDetailsCtrl', function ($scope,authService, $http, config, $stateParams, $ionicLoading, onError) {
 
     $scope.battleId;
-    $scope.myVote = {
-
-    }
+    $scope.auth;
   
-
     function init(){
         $scope.auth = authService;
         $scope.battleId = $stateParams.battleId;
@@ -315,18 +341,40 @@ app.controller('battleDetailsCtrl', function ($scope,authService, $http, config,
     }
 
     $scope.getBattle = function(){
+        $ionicLoading.show();
         $http.get(config.apiRoot + '/battles/' + $scope.battleId)
             .then((response) => {
                 $scope.battle = response.data;
+                $ionicLoading.hide();
                 $scope.$broadcast('scroll.refreshComplete');
-            })
+            }, onError)       
     }
 
-    $scope.vote = function(){
-        debugger;
-        $scope.battle.myVote = {
-            user: $scope.selectedUser
+    $scope.canVote = function(){
+        if($scope.battle){
+            var canVote = true;
+            $scope.battle.votes.forEach((vote) => {
+                if(vote.byUserId == authService.user._id){
+                    canVote = false;
+                }
+            }); 
+            return canVote;
         }
+       
+    }
+
+    $scope.vote = function(selectedUser){
+        $ionicLoading.show();
+        var vote = {
+            byUserId: authService.user._id,
+            forUserId: selectedUser._id
+        };
+
+        $http.post(config.apiRoot + '/battles/' + $scope.battleId + '/votes', vote)
+            .then((response) => {
+                $scope.battle = response.data;
+                $ionicLoading.hide();
+            }, onError)  
     }
 
     init();
@@ -421,90 +469,125 @@ app.controller('eventsCtrl', function ($scope, $ionicModal, $cordovaBarcodeScann
 
 var app = angular.module('battletime-app');
 
-app.controller('portalCtrl', function ($scope, $ionicModal, $window, $ionicPopover, $http, $state, $timeout, authService, config) {
+app.controller('portalCtrl', function ($scope, $cordovaCamera, authService, $ionicModal, 
+    $http, $state, $timeout, config, $cordovaBarcodeScanner, $ionicLoading) {
 
-    $scope.messages = [
-        "Rolling out the floor",
-        "Putting on some new nikies",
-        "Tying shoelaces",
-        "Finding the best break-beats",
-        "Wrack and Strack",
-        "Bragge and boasting",
-        "Uprocking",
-        "Stretching",
-        "Meditating",
-        "de-Cyphering enemy moves",
-        "Nothing... just nothing",
-        "Charging energy bom",
-        "Relaxing soul",
-        "Throwing some flares",
-        "Taunting enemy",
-        "Eating a sandwich",
-        "Throwing some flipo's",
-        "Discovering a new pokemon",
-        "Wait, is this breakdance GO?",
-        "Controlling nerves",
-        "Vommoting on sweater already",
-        "Eating mom's spagetti",
-        "Breaking the sweet",
-        "Practice what you preach",
-        "Breaking the habbit",
-        "Breaking the hobbit",
-        "Checking out the air track" 
-    ]
 
-    $scope.battles;
-    var counter = 0;
-    var timeoutId;
+
+    $scope.scanEventCode = function(){
+        $cordovaBarcodeScanner.scan().then(function(result) {
+            var eventSecret = result.text;
+            $http.post(config.apiRoot + '/events/secret/' + eventSecret, { userId: authService.user._id})
+                .success(function(event){
+                    $state.go('event-confirm', {eventId: event._id });
+                });
+        });
+    }
 
     function init(){
         $scope.auth = authService;
-        if(authService.user){
-            $scope.getMyBattles();
-        }
     }
+
+    $scope.editPicture = function(){
+
+        var options = {
+            quality: 50,
+            destinationType: Camera.DestinationType.DATA_URL,
+            sourceType: Camera.PictureSourceType.CAMERA,
+            allowEdit: true,
+            encodingType: Camera.EncodingType.JPEG,
+            targetWidth: 400,
+            targetHeight: 400,
+            popoverOptions: CameraPopoverOptions,
+            saveToPhotoAlbum: false,
+            correctOrientation:true
+        };
+
+        $cordovaCamera.getPicture(options)
+            .then(function(imageData) {
+                $ionicLoading.show();
+                var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
+                $http.post(url, { baseString: imageData})
+                    .then((response) => {
+                         authService.updateUser(response.data);
+                         authService.user.imageUri += ('?decache=' + Math.random());
+                         $ionicLoading.hide();
+                    }, onError);          
+            }, onError);
+    }
+
+    //     $scope.messages = [
+    //     "Rolling out the floor",
+    //     "Putting on some new nikies",
+    //     "Tying shoelaces",
+    //     "Finding the best break-beats",
+    //     "Wrack and Strack",
+    //     "Bragge and boasting",
+    //     "Uprocking",
+    //     "Stretching",
+    //     "Meditating",
+    //     "de-Cyphering enemy moves",
+    //     "Nothing... just nothing",
+    //     "Charging energy bom",
+    //     "Relaxing soul",
+    //     "Throwing some flares",
+    //     "Taunting enemy",
+    //     "Eating a sandwich",
+    //     "Throwing some flipo's",
+    //     "Discovering a new pokemon",
+    //     "Wait, is this breakdance GO?",
+    //     "Controlling nerves",
+    //     "Vommoting on sweater already",
+    //     "Eating mom's spagetti",
+    //     "Breaking the sweet",
+    //     "Practice what you preach",
+    //     "Breaking the habbit",
+    //     "Breaking the hobbit",
+    //     "Checking out the air track" 
+    // ]
+
  
-    $scope.getRandomBattle = function(){
-        counter = 0;
-        $scope.randomChallanger = null;
-        $scope.loading = true; 
-        $scope.msgIndex = getRandomInt(0, $scope.messages.length-1);
+    // $scope.getRandomBattle = function(){
+    //     counter = 0;
+    //     $scope.callout = null;
+    //     $scope.loading = true; 
+    //     $scope.msgIndex = getRandomInt(0, $scope.messages.length-1);
 
-          $http.post(config.apiRoot + '/battles/random/' + authService.user._id)
-            .then((response) => {
-                $scope.randomChallanger = response.data;             
-            })
+    //       $http.post(config.apiRoot + '/battles/random/' + authService.user._id)
+    //         .then((response) => {
+    //             $scope.callout = response.data;             
+    //         })
 
-        timeoutId = $window.setInterval(() => {
-            counter++;
-            var nextIndex = getRandomInt(0, $scope.messages.length-2);
-            $scope.msgIndex = nextIndex == $scope.msgIndex ? nextIndex + 1 : nextIndex;
-            if(counter > 5 && $scope.randomChallanger){               
-                window.clearTimeout(timeoutId);
-                $scope.loading = false;           
-            }
-            $scope.$apply();
-        }, 1000); 
+    //     timeoutId = $window.setInterval(() => {
+    //         counter++;
+    //         var nextIndex = getRandomInt(0, $scope.messages.length-2);
+    //         $scope.msgIndex = nextIndex == $scope.msgIndex ? nextIndex + 1 : nextIndex;
+    //         if(counter > 5 && $scope.callout){               
+    //             window.clearTimeout(timeoutId);
+    //             $scope.loading = false;           
+    //         }
+    //         $scope.$apply();
+    //     }, 1000); 
 
       
-    }
+    // }
 
-    $scope.addChallenger = function(){
-        $scope.battles.push($scope.randomChallanger);
-        $scope.randomChallanger = null;
-    }
+    // $scope.addChallenger = function(){
+    //     $scope.battles.push($scope.callout);
+    //     $scope.callout = null;
+    // }
 
-    $scope.getMyBattles = function(){
-        $http.get(config.apiRoot + '/users/' + $scope.auth.user._id + '/battles')
-            .then((response) => {
-                $scope.battles = response.data;
-                $scope.$broadcast('scroll.refreshComplete');
-            })
-    }
+    // $scope.getMyBattles = function(){
+    //     $http.get(config.apiRoot + '/users/' + $scope.auth.user._id + '/battles')
+    //         .then((response) => {
+    //             $scope.battles = response.data;
+    //             $scope.$broadcast('scroll.refreshComplete');
+    //         })
+    // }
 
-    function getRandomInt(min, max) {
-         return Math.round(Math.random() * (max - min) + min);
-    }
+    // function getRandomInt(min, max) {
+    //      return Math.round(Math.random() * (max - min) + min);
+    // }
 
     init();
 
@@ -513,12 +596,12 @@ app.controller('portalCtrl', function ($scope, $ionicModal, $window, $ionicPopov
 
 var app = angular.module('battletime-app');
 
-app.controller('settingsCtrl', function ($scope, $ionicModal, $ionicPopover, $http, $state, $timeout, authService, config) {
+app.controller('settingsCtrl', function ($scope,$state, $http, authService, $ionicLoading, $cordovaCamera, config, onError) {
 
 
 
     function init(){
-
+        $scope.auth = authService;
     }
 
     $scope.logout = function(){
@@ -530,6 +613,8 @@ app.controller('settingsCtrl', function ($scope, $ionicModal, $ionicPopover, $ht
 
 });
    
+
+  
 
 var app = angular.module('battletime-app');
 

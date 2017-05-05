@@ -2,40 +2,42 @@
     <ion-content>
         <div class="bar bar-subheader bar-stable static text-center">
             <strong class="title">Events</strong>     
-           <div class="buttons buttons-right header-item">
-                <span class="right-buttons">
-                    <button class="button button-balanced button-fab" ng-click="scanEventCode()">
-                        <i class="icon icon-sm ion-plus"></i>
-                    </button>
-                </span>
+        </div>
+
+        <div class="im-wrapper">
+
+            <div class="text-center margin-top" ng-show="events.length == 0">
+                <h4 class="border-bottom">
+                    Ow noes!
+                </h4>
+                <p>
+                    You have not entered an event yet. You can join an event by scanning the required QR code given to you at the signup desk.
+                    To scan the QR code, click the <b>SCAN QR CODE</b> button. 
+                </p>
             </div>
-        </div>
 
-        <div class="im-wrapper text-center margin-top" ng-show="events.length == 0">
-            <h4 class="border-bottom">
-                 Ow noes!
-            </h4>
-            <p>You have not entered an event yet. You can join an event by scanning the required QR code given to you at the signup desk.
-                To scan the QR code, click the <b class="<text-balanced></text-balanced>">+</b> button on the top right side of this screen. </p>
-        </div>
+            <button class="button button-block button-assertive" ng-click="scanEventCode()">
+                SCAN SQ CODE
+            </button>
 
-        <div class="im-wrapper" ng-show="events.length > 0">
+            <div  ng-show="events.length > 0">
 
-            <ion-refresher pulling-text="Pull to refresh" on-refresh="getMyEvents()"></ion-refresher>
+                <ion-refresher pulling-text="Pull to refresh" on-refresh="getMyEvents()"></ion-refresher>
 
-            <h4 class="border-bottom">
-                <i class="icon ion-flag"></i>      
-                My events
-            </h4>
+                <h4 class="border-bottom">
+                    <i class="icon ion-flag"></i>      
+                    My events
+                </h4>
 
-            <div class="list">
-                <a class="item item-avatar" ng-repeat="event in events | orderBy: '-stoppedOn'" class="status-{{event.status.id}}">
-                    <img src="img/material1.jpg">
-                    <span>{{event.name}}</span>               
-                    <p>
-                        {{event.status.text}}
-                    </p>
-                </a>
+                <div class="list">
+                    <a class="item item-avatar" ng-repeat="event in events | orderBy: '-stoppedOn'" class="status-{{event.status.id}}">
+                        <img src="img/material1.jpg">
+                        <span>{{event.name}}</span>               
+                        <p>
+                            {{event.status.text}}
+                        </p>
+                    </a>
+                </div>
             </div>
         </div>
     

@@ -12,84 +12,36 @@
 
                 <div class="item item-icon-left">
                     <i class="icon ion-ios-clock"></i>
-                    <span ng-show="battle.startedOn">{{battle.startedOn | date : 'medium' }}</span>
-                    <span ng-show="!battle.startedOn">Not yet started </span>
+                    <span >{{ battle.stoppedOn ? (battle.stoppedOn | date : 'medium') : 'In progress' }}</span>
                 </div>
 
                 <div class="item item-icon-left">
                     <i class="icon ion-trophy"></i>
-                    <span>{{battle.winner ? battle.winner : 'No winner' }}</span>
+                    <span>{{battle.winner ? battle.winner.username : 'No winner' }}</span>
                 </div>
     
                 <div href="#" class="item item-icon-left">
                     <i class="icon ion-flag"></i>
-                    <span>{{battle.event ? battle.event : 'Callout' }}</span>
+                    <span>{{battle.event ? battle.event.name : 'Callout' }}</span>
                 </div>
             </div>
 
-            <div class="list card bordered">
-
-                <div class="item item-icon-left">
-                    <i class="icon ion-compose"></i>
-                    <h2>Vote</h2>
-                    <p>Who do you think won the battle?</p>
-                </div>
-
-                <div class="item item-body">
-                    <span ng-show="battle.stoppedOn || battle.event">Voting is closed</span>
-
-                    <div ng-show="!battle.event && !battle.stoppedOn && battle.startedOn">
-                        <div ng-show="!battle.myVote">
-                            <label class="item-input item-select" >
-                                <div class="input-label">
-                                Participants
-                                </div>
-                                <select ng-model="selectedIndex">
-                                    <option value="{{$index}}" ng-repeat="user in battle.participants track by $index">
-                                        {{user.username}}
-                                    </option>
-                                </select>
-                            </label>
-
-                            <button class="button button-block button-assertive" ng-click="vote($index)">Vote</button>
-                        </div>
-                        <div ng-show="selectedIndex">
-                            <p>You voted for {{battle.participants[selectedIndex].username}}</p>
-                        </div>
-                    </div>
-
-                    <span ng-show="!battle.startedOn && !battle.event">
-                        Voting has not started yet
-                    </span>
-
-                </div>
-            </div>
-
-            <div class="list card bordered">
+            <div class="list bordered">
 
                 <div class="item item-icon-left">
                     <i class="icon ion-person"></i>
                     <h2>Participants</h2>
-                    <p>These brave dances gave it all</p>
+                    <p>These brave dances gave it all they got!</p>
                 </div>
    
-                <div class="item item-avatar my-battles" ng-repeat="user in battle.participants">
-                    <img src="img/material1.jpg">
-
+                <div class="item item-avatar participants" ng-repeat="user in battle.participants">
+                    <img ng-src="{{user.imageUri | image}}" >
                     <span >
-                        {{user.username }}
+                        {{user.username }} <b> {{user._id == battle.winner._id ? '- Winner' : ''}} </b>
                     </span>
                 </div>
             </div>
         </div>
             
-
-        <div ng-show="battle.event" class="im-wrapper">
-            <h4 class="border-bottom">
-                <i class="icon ion-android-color-palette"></i>      
-                Votes
-            </h4>
-        </div>
-
     </ion-content>
 </ion-view>
