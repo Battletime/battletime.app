@@ -11,7 +11,7 @@ app.controller('portalCtrl', function ($scope, $cordovaCamera, authService, $ion
             $http.post(config.apiRoot + '/events/secret/' + eventSecret, { userId: authService.user._id})
                 .success(function(event){
                     $state.go('event-confirm', {eventId: event._id });
-                });
+                }); 
         });
     }
 
