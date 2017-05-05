@@ -487,6 +487,7 @@ app.controller('portalCtrl', function ($scope, $cordovaCamera, authService, $ion
     function init(){
         $scope.auth = authService;
     }
+<<<<<<< HEAD
 
     $scope.editPicture = function(){
 
@@ -568,14 +569,45 @@ app.controller('portalCtrl', function ($scope, $cordovaCamera, authService, $ion
     //         }
     //         $scope.$apply();
     //     }, 1000); 
+=======
+ 
+    $scope.getRandomBattle = function(){
+        counter = 0;
+        $scope.callout = null;
+        $scope.loading = true; 
+        $scope.msgIndex = getRandomInt(0, $scope.messages.length-1);
+
+          $http.post(config.apiRoot + '/battles/random/' + authService.user._id)
+            .then((response) => {
+                $scope.callout = response.data;             
+            })
+
+        timeoutId = $window.setInterval(() => {
+            counter++;
+            var nextIndex = getRandomInt(0, $scope.messages.length-2);
+            $scope.msgIndex = nextIndex == $scope.msgIndex ? nextIndex + 1 : nextIndex;
+            if(counter > 5 && $scope.callout){               
+                window.clearTimeout(timeoutId);
+                $scope.loading = false;           
+            }
+            $scope.$apply();
+        }, 1000); 
+>>>>>>> fbd6dbb89f782fb2c976f6bbe763980537f0b081
 
       
     // }
 
+<<<<<<< HEAD
     // $scope.addChallenger = function(){
     //     $scope.battles.push($scope.callout);
     //     $scope.callout = null;
     // }
+=======
+    $scope.addChallenger = function(){
+        $scope.battles.push($scope.callout);
+        $scope.callout = null;
+    }
+>>>>>>> fbd6dbb89f782fb2c976f6bbe763980537f0b081
 
     // $scope.getMyBattles = function(){
     //     $http.get(config.apiRoot + '/users/' + $scope.auth.user._id + '/battles')
@@ -608,6 +640,47 @@ app.controller('settingsCtrl', function ($scope,$state, $http, authService, $ion
         authService.Logout();
         $state.go('login');
     }
+
+    // $scope.test = function(){
+    //        $ionicLoading.show();
+    //         var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
+    //         $http.post(url, { baseString: document.getElementById('temp').value })
+    //             .then((response) => {
+    //                 authService.updateUser(response.data);
+    //                 authService.user.imageUri += ('?decache=' + Math.random());
+    //                 $ionicLoading.hide();
+                    
+    //             }, onError);          
+    // }
+
+    $scope.editPicture = function(){
+
+        var options = {
+            quality: 50,
+            destinationType: Camera.DestinationType.DATA_URL,
+            sourceType: Camera.PictureSourceType.CAMERA,
+            allowEdit: true,
+            encodingType: Camera.EncodingType.JPEG,
+            targetWidth: 400,
+            targetHeight: 400,
+            popoverOptions: CameraPopoverOptions,
+            saveToPhotoAlbum: false,
+            correctOrientation:true
+        };
+
+        $cordovaCamera.getPicture(options)
+            .then(function(imageData) {
+                $ionicLoading.show();
+                var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
+                $http.post(url, { baseString: imageData})
+                    .then((response) => {
+                         authService.updateUser(response.data);
+                         authService.user.imageUri += ('?decache=' + Math.random());
+                         $ionicLoading.hide();
+                    }, onError);          
+            }, onError);
+    }
+
 
     init();
 
