@@ -8,8 +8,6 @@
             </div>
         </div>
 
-        {{error}}
-
         <div class="im-wrapper text-center">
             <h4 class="border-bottom" >
                 Welcome {{auth.user.username}}
@@ -17,9 +15,9 @@
 
             <p>
                 Thank you {{auth.user.username}} for singing in! 
-                We will now be able te generate battles with you're profile.
-                Every <b>battle</b> will be presented on the big screen using you're username and <b>profile</b> picture.
-                You can change you're profile picture by clicking <the></the> on the profile picture above.
+                We will now be able te generate battles with your profile information.
+                Every <b>battle</b> will be presented on the big screen using your username and <b>profile picture</b>.
+                You can change your profile picture by clicking on it. 
 
             </p>
 
@@ -29,7 +27,7 @@
 
             <p>
                 Every battle you participate in, is viewable via the 
-                <b>battles</b> page (see hamburger menu on the top left).
+                <b>battles</b> page (see hamburger menu in the top left corner of the screen).
                 These battles will be assigned to you via events. 
             </p>
 
@@ -44,11 +42,11 @@
             <p>
                 Now that you have a battletime profile, you can join events. 
                 After every bboy or bgirl is subscribed to the event, the event can start! 
-                You can join an event by scanning the <b>event QR code</b> via the <b>SCAN QR CODE</b> button below.
+                You can join an event by scanning the <b>event QR code</b>.
             </p>
 
             <button class="button button-block button-assertive" ng-click="scanEventCode()">
-                SCAN SQ CODE
+                SCAN QR CODE
             </button>
         </div>
      
