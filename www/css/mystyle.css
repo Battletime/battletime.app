@@ -26,56 +26,47 @@
     color:white;
 }
 
-.card.dark{
-    background-color:#eee;
+.bar.expanded{
+    height:150px;
 }
 
-.card {
-    border-left:3px solid #555;
+.bar-portal{
+    margin-bottom:30px;
 }
 
-.card.asssertive{
-    border-left:3px solid #ef473a;
+.bar-signup{
+    margin-bottom:10px;
+    display: block;
 }
 
-.item-avatar.participants img{
-    top:6px;
+.bar-portal .profile-pic{
+    position: relative;
+    width: 150px;
+    top: 20px;
+    left: 50%;
+    margin-left: -75px;
 }
 
-.loading{
-    background-color: #555;
+.profile-pic{
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+}
+
+.profile-pic img{
+    border:3px solid white;
+    width:100%;
+    display: block;
+}
+
+.profile-pic i{
+    position: absolute;
+    right:6px; bottom:6px;
     color:white;
     font-size:120%;
-    line-height: 36px;
+    padding:2px 5px;
+    border: 1px solid white;
 }
 
-.profile{
-    text-align:center;
-    width:200px;
-    display: inline-block;
-    position: relative;
-    margin:12px;
-    left:50%;
-    margin-left:-100px;
-}
-
-.profile-name{
-    font-size: 200%;
-    color:#555;
-    margin-top:7px;
-    text-align: center;
-    
-}
-
-.profile img{
-    width:100%;
-}
-
-.profile i{
-   font-size:300%;
-   padding:3px;
-   position: absolute;
-   color:white;
-   bottom:0px;
-   right:0px;
+.flex{
+    display: flex;
+    justify-content: space-around;
 }

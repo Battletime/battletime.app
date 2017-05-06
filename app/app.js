@@ -17,7 +17,7 @@ app.run(function ($ionicPlatform) {
 
 app.filter('image', function(config){
     return function(input){
-        if(input.indexOf("imgur") == -1)
+        if(input && input.indexOf("imgur") == -1)
             return config.serverRoot + input;
         else{
             return input;

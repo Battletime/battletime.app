@@ -26,40 +26,6 @@
                 </div>
             </div>
 
-            <div class="list card bordered asssertive">
-
-                <div class="item item-icon-left">
-                    <i class="icon ion-compose"></i>
-                    <h2>Vote</h2>
-                    <div ng-show="!battle.event">
-                        <p ng-show="battle.status.id == '0'">Voting has not started yet</p>
-                        <p ng-show="battle.status.id == '1'">Who do you think won the battle?</p>   
-                        <p ng-show="battle.status.id == '2'">Voting is closed</p>
-                    </div>
-                    <p ng-show="battle.event">You can't vote for this battle :( </p>
-                </div>
-
-                <div class="item item-body" ng-show="battle.status.id == '1'">        
-                    <div ng-show="canVote()">
-                        <label class="item-input item-select" >
-                            <div class="input-label">
-                            Participants
-                            </div>
-                            <select ng-model="selectedIndex">
-                                <option value="{{$index}}" ng-repeat="user in battle.participants track by $index">
-                                    {{user.username}}
-                                </option>
-                            </select>
-                        </label>
-
-                        <button class="button button-block button-assertive" ng-click="vote(battle.participants[selectedIndex])">Vote</button>
-                    </div>
-                    <div ng-show="!canVote()">
-                        <p>You already voted! Wait for the you're opponent to vote.</p>
-                    </div>
-                </div>
-            </div>
-
             <div class="list bordered">
 
                 <div class="item item-icon-left">
