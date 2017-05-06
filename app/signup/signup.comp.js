@@ -10,30 +10,23 @@ app.controller('signupCtrl', function($scope, authService, $state, $ionicLoading
 
     $scope.page = 'start';
 
-    $scope.hack = function(){
-        $scope.login = {
-            email: "@gmail.com",
-            password: ""
-        }
-         $scope.sendLogin();
-    }
-
     $scope.sendSignup = function(){
         $ionicLoading.show();
         authService.Signup($scope.signup).then(
         (user) => {
             $ionicLoading.hide();
              $state.go('app.portal');
+            //empty password fiels
+            $scope.signup.password = null;
+            $scope.signup.repeat = null; 
         }, 
         (response) => {
             $ionicLoading.hide();
             $scope.signup.errors = response.errors
+            //empty password fiels
+            $scope.signup.password = null;
+            $scope.signup.repeat = null; 
         });
-
-        //empty password fiels
-        $scope.signup.password = null;
-        $scope.signup.repeat = null; 
-        
     }
 
     $scope.sendLogin = function(){
