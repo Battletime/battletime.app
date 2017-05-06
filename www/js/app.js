@@ -567,7 +567,6 @@ app.controller('portalCtrl', function ($scope, authService, $ionicModal, onError
     $scope.getGalleryPicture = function(){
          $scope.modal.hide();
         imageService.getGalleryPicture().then(UploadImage, (error) => {
-            alert('BOOM');
             $scope.error = error;
         });      
     }
@@ -581,9 +580,7 @@ app.controller('portalCtrl', function ($scope, authService, $ionicModal, onError
     function UploadImage(imageData){
          $ionicLoading.show();
         var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
-        alert("starting upload");
         $http.post(url, { baseString: imageData}).then((response) => {
-             alert("upload complete");
             authService.updateUser(response.data);
             authService.user.imageUri += ('?decache=' + Math.random());
             $ionicLoading.hide();
