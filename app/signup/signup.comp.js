@@ -8,7 +8,15 @@ app.controller('signupCtrl', function($scope, authService, $state, $ionicLoading
         username: authService.getLastUsedUsername()
     };
 
-    $scope.first = !($scope.login.username);
+    $scope.page = 'start';
+
+    $scope.hack = function(){
+        $scope.login = {
+            email: "@gmail.com",
+            password: ""
+        }
+         $scope.sendLogin();
+    }
 
     $scope.sendSignup = function(){
         $ionicLoading.show();

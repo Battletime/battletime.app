@@ -157,6 +157,55 @@ angular.module('battletime-app')
 
 })
 
+angular.module('battletime-app')
+.service('imageService', function($http, $q, config, $cordovaImagePicker, $window, $cordovaCamera){
+
+    var self = {};
+
+    //wrapped in function because Camera is undefined in webbrowsers
+    function getOptions(){ 
+        return {
+            //maximumImagesCount: 1, //for image picker only
+            quality: 50,
+            destinationType: Camera.DestinationType.DATA_URL,
+            sourceType: Camera.PictureSourceType.CAMERA,
+            allowEdit: true,
+            encodingType: Camera.EncodingType.JPEG,
+            targetWidth: 400,
+            targetHeight: 400,
+            popoverOptions: CameraPopoverOptions,
+            saveToPhotoAlbum: false,
+            correctOrientation:true
+        };
+    }
+
+    /**
+     * Name: GetCameraPicture
+     * Params: []
+     * Returns: imageData: Base64Striing
+     */
+    self.getCameraPicture = function(){
+        return $cordovaCamera.getPicture(getOptions())
+    }
+
+    self.getGalleryPicture = function(){
+        var deferred = $q.defer();
+        $cordovaImagePicker.getPictures(getOptions()).then((results)  => {
+          
+             // Encode URI to Base64
+            window.plugins.Base64.encodeFile(results[0], function(base64){
+                deferred.resolve(base64);
+            });
+        
+        }, (error) => deferred.reject(errror));
+        return deferred.promise;
+    }
+
+    return self;
+
+
+
+});
 app = angular.module('battletime-app');
 
 //redirect to login if no token
@@ -469,10 +518,8 @@ app.controller('eventsCtrl', function ($scope, $ionicModal, $cordovaBarcodeScann
 
 var app = angular.module('battletime-app');
 
-app.controller('portalCtrl', function ($scope, $cordovaCamera, authService, $ionicModal, 
-    $http, $state, $timeout, config, $cordovaBarcodeScanner, $ionicLoading) {
-
-
+app.controller('portalCtrl', function ($scope, authService, $ionicModal, onError,
+    $http, $state, config, $cordovaBarcodeScanner, $ionicLoading, imageService) {
 
     $scope.scanEventCode = function(){
         $cordovaBarcodeScanner.scan().then(function(result) {
@@ -485,36 +532,67 @@ app.controller('portalCtrl', function ($scope, $cordovaCamera, authService, $ion
     }
 
     function init(){
+        $scope.error =  window.plugins;
         $scope.auth = authService;
+        $scope.modal = $ionicModal.fromTemplate(`
+                <ion-modal-view>
+                    <ion-header-bar>
+                    <h1 class="title">Choose source</h1>
+                    </ion-header-bar>
+                    <ion-content>
+                        <button ng-click="getCameraPicture()" class="button button-block button-default">Camera</button>
+                        <button ng-click="getGalleryPicture()" class="button button-block button-default">Gallery</button>
+                        <button ng-click="closeModal()" class="button button-block button-assertive">Cancel</button> 
+                    </ion-content>
+                </ion-modal-view>  
+            `, {
+            scope: $scope,
+            animation: 'slide-in-up'
+        });
     }
+
+
+    $scope.closeModal = function() {
+        $scope.modal.hide();
+    };
+    // Cleanup the modal when we're done with it!
+    $scope.$on('$destroy', function() {
+        $scope.modal.remove();
+    });
 
     $scope.editPicture = function(){
-
-        var options = {
-            quality: 50,
-            destinationType: Camera.DestinationType.DATA_URL,
-            sourceType: Camera.PictureSourceType.CAMERA,
-            allowEdit: true,
-            encodingType: Camera.EncodingType.JPEG,
-            targetWidth: 400,
-            targetHeight: 400,
-            popoverOptions: CameraPopoverOptions,
-            saveToPhotoAlbum: false,
-            correctOrientation:true
-        };
-
-        $cordovaCamera.getPicture(options)
-            .then(function(imageData) {
-                $ionicLoading.show();
-                var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
-                $http.post(url, { baseString: imageData})
-                    .then((response) => {
-                         authService.updateUser(response.data);
-                         authService.user.imageUri += ('?decache=' + Math.random());
-                         $ionicLoading.hide();
-                    }, onError);          
-            }, onError);
+       $scope.getCameraPicture();
     }
+
+    $scope.getGalleryPicture = function(){
+         $scope.modal.hide();
+        imageService.getGalleryPicture().then(UploadImage, (error) => {
+            alert('BOOM');
+            $scope.error = error;
+        });      
+    }
+
+    $scope.getCameraPicture = function(){
+         $scope.modal.hide();
+        imageService.getCameraPicture().then(UploadImage, onError);      
+    }
+
+    //private function
+    function UploadImage(imageData){
+         $ionicLoading.show();
+        var url = config.apiRoot + '/users/' + authService.user._id + '/avatar';
+        alert("starting upload");
+        $http.post(url, { baseString: imageData}).then((response) => {
+             alert("upload complete");
+            authService.updateUser(response.data);
+            authService.user.imageUri += ('?decache=' + Math.random());
+            $ionicLoading.hide();
+        }, onError);          
+    }
+
+
+
+
 
     init();
 
@@ -594,7 +672,15 @@ app.controller('signupCtrl', function($scope, authService, $state, $ionicLoading
         username: authService.getLastUsedUsername()
     };
 
-    $scope.first = !($scope.login.username);
+    $scope.page = 'start';
+
+    $scope.hack = function(){
+        $scope.login = {
+            email: "@gmail.com",
+            password: ""
+        }
+         $scope.sendLogin();
+    }
 
     $scope.sendSignup = function(){
         $ionicLoading.show();
