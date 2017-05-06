@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.ionicframework.battletime348091" version="0.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.ionicframework.battletime348091" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Battletime</name>
     <description>
         An Ionic hybric mobile application to view and manage battles of the battletime web platform. 
     </description>
     <author email="linksonder@gmail.com" href="http://example.com/">
-      Stokm S,i;ders
+      Stijn Smulders
     </author>
     <content src="index.html" />
     <access origin="*" />
@@ -82,5 +82,5 @@
     </platform>
     <icon src="resources\android\icon\drawable-xhdpi-icon.png" />
     <plugin name="cordova-plugin-image-picker" spec="https://github.com/wymsee/cordova-imagePicker.git" />
-    <plugin name="com-badrit-base64" spec="https://github.com/hazemhagrass/phonegap-base64.git" />
+
 </widget>
